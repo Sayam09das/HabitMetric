@@ -27,9 +27,9 @@ router.post('/logout', logoutUser);
 // router.post('/resend-otp', resendOtp);
 // router.get('/me', authenticateToken, getCurrentUser);
 
-// Example protected route
-router.get('/', authenticateToken, (req, res) => {
-    res.json({ message: 'This is a protected route' });
+router.get('/test', authenticateToken, (req, res) => {
+    res.json({ message: 'Auth protected route works fine!' });
 });
+
 
 module.exports = router;
