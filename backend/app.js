@@ -13,6 +13,9 @@ const database = require('./database/db');
 
 const authRoutes = require('./routes/authRoutes');
 const protectedRoutes = require('./routes/protectedRoutes');
+const habitRoutes = require('./routes/habit');
+const moodRoutes = require('./routes/mood');
+
 
 // ✅ CORS Configuration
 app.use(
@@ -35,6 +38,8 @@ database();
 
 app.use('/auth', authRoutes);
 app.use('/protected', protectedRoutes);
+app.use('/habit', habitRoutes);
+app.use('/mood', moodRoutes);
 
 
 app.use((req, res, next) => {
@@ -44,5 +49,7 @@ app.use((req, res, next) => {
     res.setHeader("Surrogate-Control", "no-store");
     next();
 });
+
+app.use((req, res) => res.status(404).json({ success: false, message: 'Not found' }));
 
 module.exports = app;
