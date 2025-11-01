@@ -10,8 +10,9 @@ require('dotenv').config();
 // Database connection
 const database = require('./database/db');
 
-// const authRoutes = require('./routes/authRoutes');
-// const protectedRoutes = require('./routes/protectedRoutes');
+
+const authRoutes = require('./routes/authRoutes');
+const protectedRoutes = require('./routes/protectedRoutes');
 
 // ✅ CORS Configuration
 app.use(
@@ -32,8 +33,8 @@ app.use(helmet());
 // Connect to MongoDB
 database();
 
-// app.use('/auth', authRoutes);
-// app.use('/protected', protectedRoutes);
+app.use('/auth', authRoutes);
+app.use('/protected', protectedRoutes);
 
 
 app.use((req, res, next) => {
