@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, Menu, X } from 'lucide-react';
 
@@ -15,11 +16,11 @@ const Navbar = () => {
     }, []);
 
     const navLinks = [
-        { label: 'Home', href: '#home' },
-        { label: 'Features', href: '#features' },
-        { label: 'How It Works', href: '#how-it-works' },
-        { label: 'About', href: '#about' },
-        { label: 'Contact', href: '#contact' }
+        { label: 'Home', href: '/' },
+        { label: 'Features', href: '/features' },
+        { label: 'How It Works', href: '/how-it-works' },
+        { label: 'About', href: '/about' },
+        { label: 'Contact', href: '/contact' }
     ];
 
     return (
@@ -27,8 +28,8 @@ const Navbar = () => {
             {/* Desktop & Mobile Navbar */}
             <motion.nav
                 className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-                        ? 'bg-white/95 backdrop-blur-lg shadow-lg border-b border-[#E2E8F0]'
-                        : 'bg-white/80 backdrop-blur-sm'
+                    ? 'bg-white/95 backdrop-blur-lg shadow-lg border-b border-[#E2E8F0]'
+                    : 'bg-white/80 backdrop-blur-sm'
                     }`}
                 initial={{ y: -100 }}
                 animate={{ y: 0 }}
@@ -36,20 +37,29 @@ const Navbar = () => {
             >
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16 md:h-20">
-                        {/* Logo */}
-                        <motion.a
-                            href="#home"
-                            className="flex items-center space-x-2 sm:space-x-3 cursor-pointer"
+                        <motion.div
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                         >
-                            <div className="bg-gradient-to-br from-[#4F46E5] to-[#6366F1] p-2 rounded-lg sm:rounded-xl shadow-lg shadow-[#4F46E5]/20">
-                                <Brain className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
-                            </div>
-                            <span className="text-lg sm:text-xl md:text-2xl font-bold text-[#1E293B]">
-                                AI Habit Architect
-                            </span>
-                        </motion.a>
+                            <Link
+                                to="/"
+                                className="flex items-center space-x-2 sm:space-x-3 cursor-pointer"
+                            >
+                                <div className="p-2 rounded-lg sm:rounded-xl">
+                                    <img
+                                        src="/logo.png"
+                                        alt="Logo"
+                                        className="w-7 h-7 sm:w-8 sm:h-8 object-contain"
+                                    />
+                                </div>
+
+                                <span className="text-lg sm:text-xl md:text-2xl font-bold text-[#1E293B]">
+                                    AI Habit Architect
+                                </span>
+                            </Link>
+                        </motion.div>
+
+
 
                         {/* Desktop Navigation Links */}
                         <div className="hidden lg:flex items-center space-x-1">
@@ -68,21 +78,27 @@ const Navbar = () => {
 
                         {/* Desktop Auth Buttons */}
                         <div className="hidden lg:flex items-center space-x-3">
-                            <motion.button
-                                className="px-6 py-2.5 rounded-lg border-2 border-[#E2E8F0] text-[#1E293B] hover:bg-[#EEF2FF] transition-all font-medium"
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                            >
-                                Login
-                            </motion.button>
-                            <motion.button
-                                className="px-6 py-2.5 rounded-lg bg-[#4F46E5] text-white hover:bg-[#6366F1] transition-all shadow-lg shadow-[#4F46E5]/20 font-medium"
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                            >
-                                Sign Up
-                            </motion.button>
+                            <Link to="/login">
+                                <motion.button
+                                    className="px-6 py-2.5 rounded-lg border-2 border-[#E2E8F0] text-[#1E293B] hover:bg-[#EEF2FF] transition-all font-medium cursor-pointer"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                >
+                                    Login
+                                </motion.button>
+                            </Link>
+
+                            <Link to="/signup">
+                                <motion.button
+                                    className="px-6 py-2.5 rounded-lg bg-[#4F46E5] text-white hover:bg-[#6366F1] transition-all shadow-lg shadow-[#4F46E5]/20 font-medium cursor-pointer"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                >
+                                    Sign Up
+                                </motion.button>
+                            </Link>
                         </div>
+
 
                         {/* Mobile Menu Button */}
                         <motion.button
@@ -153,21 +169,27 @@ const Navbar = () => {
 
                                 {/* Mobile Auth Buttons */}
                                 <div className="space-y-3">
-                                    <motion.button
-                                        className="w-full px-6 py-3 rounded-lg border-2 border-[#E2E8F0] text-[#1E293B] hover:bg-[#EEF2FF] transition-all font-medium"
-                                        whileTap={{ scale: 0.98 }}
-                                        onClick={() => setIsOpen(false)}
-                                    >
-                                        Login
-                                    </motion.button>
-                                    <motion.button
-                                        className="w-full px-6 py-3 rounded-lg bg-[#4F46E5] text-white hover:bg-[#6366F1] transition-all shadow-lg shadow-[#4F46E5]/20 font-medium"
-                                        whileTap={{ scale: 0.98 }}
-                                        onClick={() => setIsOpen(false)}
-                                    >
-                                        Sign Up
-                                    </motion.button>
+                                    <Link to="/login">
+                                        <motion.button
+                                            className="w-full px-6 py-3 rounded-lg border-2 border-[#E2E8F0] text-[#1E293B] hover:bg-[#EEF2FF] transition-all font-medium cursor-pointer"
+                                            whileTap={{ scale: 0.98 }}
+                                            onClick={() => setIsOpen(false)}
+                                        >
+                                            Login
+                                        </motion.button>
+                                    </Link>
+
+                                    <Link to="/signup">
+                                        <motion.button
+                                            className="w-full px-6 py-3 rounded-lg bg-[#4F46E5] text-white hover:bg-[#6366F1] transition-all shadow-lg shadow-[#4F46E5]/20 font-medium cursor-pointer"
+                                            whileTap={{ scale: 0.98 }}
+                                            onClick={() => setIsOpen(false)}
+                                        >
+                                            Sign Up
+                                        </motion.button>
+                                    </Link>
                                 </div>
+
 
                                 {/* Extra Info */}
                                 <div className="mt-8 p-4 bg-[#EEF2FF] rounded-xl">
