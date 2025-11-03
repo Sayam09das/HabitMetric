@@ -54,7 +54,7 @@ const Navbar = () => {
                                 </div>
 
                                 <span className="text-lg sm:text-xl md:text-2xl font-bold text-[#1E293B]">
-                                    AI Habit Architect
+                                    Habit Matric
                                 </span>
                             </Link>
                         </motion.div>
@@ -138,7 +138,7 @@ const Navbar = () => {
                                 <div className="flex items-center space-x-3">
                                     <Brain className="w-10 h-10" />
                                     <div>
-                                        <p className="font-bold text-xl">AI Habit Architect</p>
+                                        <p className="font-bold text-xl">Habit Metric Architect</p>
                                         <p className="text-sm text-white/80">Build Better Habits</p>
                                     </div>
                                 </div>
