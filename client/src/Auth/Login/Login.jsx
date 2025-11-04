@@ -289,10 +289,10 @@ const Login = () => {
                     {/* Submit Button */}
                     <button
                         type="submit"
-                        className="w-full py-3 rounded-lg font-semibold transition-all duration-300 hover:shadow-lg"
+                        className="w-full py-3 rounded-lg font-semibold transition-all duration-300 hover:shadow-lg cursor-pointer"
                         style={{
                             backgroundColor: '#4F46E5',
-                            color: '#FFFFFF'
+                            color: '#FFFFFF',
                         }}
                     >
                         Sign In
@@ -304,8 +304,8 @@ const Login = () => {
                     <p className="text-sm" style={{ color: '#475569' }}>
                         Don't have an account?{' '}
                         <a
-                            href="#"
-                            className="font-medium hover:underline"
+                            href="/register"
+                            className="font-medium hover:underline cursor-pointer"
                             style={{ color: '#4F46E5' }}
                         >
                             Sign up

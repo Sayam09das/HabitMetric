@@ -407,7 +407,7 @@ const Register = () => {
                     {/* Submit Button */}
                     <button
                         onClick={handleSubmit}
-                        className="w-full py-3 rounded-lg font-semibold transition-all duration-300 hover:shadow-lg"
+                        className="w-full py-3 rounded-lg font-semibold transition-all duration-300 hover:shadow-lg cursor-pointer"
                         style={{
                             background: 'linear-gradient(135deg, #4F46E5 0%, #6366F1 100%)',
                             color: '#FFFFFF'
@@ -427,7 +427,7 @@ const Register = () => {
                     <div className="grid grid-cols-3 gap-3">
                         <button
                             type="button"
-                            className="flex items-center justify-center py-3 rounded-lg border-2 transition-all duration-300 hover:shadow-md"
+                            className="flex items-center justify-center py-3 rounded-lg border-2 transition-all duration-300 hover:shadow-md "
                             style={{
                                 borderColor: '#E2E8F0',
                                 backgroundColor: '#FFFFFF'
@@ -451,7 +451,7 @@ const Register = () => {
 
                         <button
                             type="button"
-                            className="flex items-center justify-center py-3 rounded-lg border-2 transition-all duration-300 hover:shadow-md"
+                            className="flex items-center justify-center py-3 rounded-lg border-2 transition-all duration-300 hover:shadow-md "
                             style={{
                                 borderColor: '#E2E8F0',
                                 backgroundColor: '#FFFFFF'
@@ -472,7 +472,7 @@ const Register = () => {
 
                         <button
                             type="button"
-                            className="flex items-center justify-center py-3 rounded-lg border-2 transition-all duration-300 hover:shadow-md"
+                            className="flex items-center justify-center py-3 rounded-lg border-2 transition-all duration-300 hover:shadow-md cursor-pointer"
                             style={{
                                 borderColor: '#E2E8F0',
                                 backgroundColor: '#FFFFFF'
@@ -498,8 +498,8 @@ const Register = () => {
                     <p className="text-sm" style={{ color: '#475569' }}>
                         Already have an account?{' '}
                         <a
-                            href="#"
-                            className="font-medium hover:underline"
+                            href="/login"
+                            className="font-medium hover:underline "
                             style={{ color: '#4F46E5' }}
                         >
                             Sign in
