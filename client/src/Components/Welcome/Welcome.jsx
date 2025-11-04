@@ -6,6 +6,8 @@ import HealthMotionPage from './HealthMotionPage';
 import About from '../About/About';
 import Contact from '../Contact/Contact';
 import HowItWorks from '../Works/Works';
+import { Heart, Activity, TrendingUp, Award, Zap, Target, Calendar, BarChart3, Brain, Dumbbell, Apple, Sparkles, ArrowRight, CheckCircle, Timer, Users, Star } from 'lucide-react';
+
 
 const Welcome = () => {
     const [isVisible, setIsVisible] = useState(false);
@@ -37,6 +39,13 @@ const Welcome = () => {
         visible: { opacity: 1, scale: 1 }
     };
 
+    const benefits = [
+        "AI-powered personalized recommendations",
+        "Track all health metrics in one place",
+        "Sync with your favorite devices",
+        "Expert-designed workout programs",
+        "24/7 support and guidance"
+    ];
     return (
         <div className="min-h-screen bg-[#F9FAFB] overflow-hidden relative">
             {/* Animated Geometric Background */}
@@ -122,27 +131,48 @@ const Welcome = () => {
 
                     <SmoothRise text="Build disciplined habits with AI guidance, clear insights, and a system designed for real, lasting progress." />
 
+                    {/* Benefits Pills */}
                     <motion.div
-                        className="flex flex-col sm:flex-row gap-4 justify-center w-full px-4"
                         variants={fadeInUp}
-                        transition={{ duration: 0.8, delay: 0.4 }}
+                        className="flex flex-wrap gap-3 justify-center mt-6 mb-8 px-4"
+                    >
+                        {benefits.map((benefit, index) => (
+                            <motion.div
+                                key={index}
+                                className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-slate-200 shadow-[0_2px_6px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-all"
+                                whileHover={{ scale: 1.05 }}
+                            >
+                                <CheckCircle className="w-4 h-4 text-green-500" />
+                                <span className="text-sm font-medium text-slate-700 whitespace-nowrap">
+                                    {benefit}
+                                </span>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+
+                    {/* CTA Buttons */}
+                    <motion.div
+                        className="flex flex-col sm:flex-row gap-4 justify-center w-full px-6 sm:px-0 mb-6"
+                        variants={fadeInUp}
+                        transition={{ duration: 0.8, delay: 0.3 }}
                     >
                         <motion.button
-                            className="w-full sm:w-auto px-6 sm:px-10 py-3 sm:py-5 rounded-xl bg-[#4F46E5] text-white text-base sm:text-lg font-semibold hover:bg-[#6366F1] transition-all shadow-xl shadow-[#4F46E5]/30  cursor-pointer"
-                            whileHover={{ scale: 1.05, y: -2 }}
-                            whileTap={{ scale: 0.95 }}
+                            className="w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 rounded-2xl bg-[#4F46E5] text-white text-base sm:text-lg font-semibold hover:bg-[#554bf7] active:scale-[0.97] transition-all shadow-lg shadow-[#4F46E5]/30"
+                            whileHover={{ scale: 1.04 }}
+                            whileTap={{ scale: 0.97 }}
                         >
                             Get Started Free
                         </motion.button>
 
                         <motion.button
-                            className="w-full sm:w-auto px-6 sm:px-10 py-3 sm:py-5 rounded-xl border-2 border-[#E2E8F0] text-[#1E293B] text-base sm:text-lg hover:bg-[#EEF2FF] transition-all font-semibold  cursor-pointer"
-                            whileHover={{ scale: 1.05, y: -2 }}
-                            whileTap={{ scale: 0.95 }}
+                            className="w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 rounded-2xl border border-slate-300 bg-white text-[#1E293B] text-base sm:text-lg font-semibold hover:bg-[#F8FAFF] active:scale-[0.97] transition-all shadow-sm"
+                            whileHover={{ scale: 1.04 }}
+                            whileTap={{ scale: 0.97 }}
                         >
                             Learn More
                         </motion.button>
                     </motion.div>
+
 
                 </motion.div>
 
@@ -173,12 +203,12 @@ const Welcome = () => {
                     ease: "easeInOut"
                 }}
             />
-
             <HealthMotionPage />
             <About />
             <HowItWorks />
             <Contact />
         </div>
+
     );
 };
 

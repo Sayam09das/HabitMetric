@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Heart, Activity, TrendingUp, Award, Zap, Target, Calendar, BarChart3, Brain, Dumbbell, Apple, Sparkles, ArrowRight, CheckCircle, Timer, Users, Star } from 'lucide-react';
+import { Highlighter } from "@/components/ui/highlighter"
+import { TextGenerateEffect } from "../ui/text-generate-effect";
 
 const HealthMotionPage = () => {
     const { scrollYProgress } = useScroll();
@@ -141,7 +143,7 @@ const HealthMotionPage = () => {
 
             {/* Hero Section */}
             <motion.div
-                className="relative z-10 pt-20 pb-32 px-4"
+                className="relative z-10 pt-20 pb-20 px-4"
                 style={{ opacity }}
             >
                 <motion.div
@@ -160,65 +162,49 @@ const HealthMotionPage = () => {
                         <Sparkles className="w-4 h-4 text-yellow-500" />
                     </motion.div>
 
+                    {/* Heading */}
                     <motion.h1
                         variants={fadeInUp}
-                        className="text-5xl md:text-7xl font-bold mb-6 leading-tight"
+                        className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-center"
                     >
-                        <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                            Your Health,
-                        </span>
+                        <Highlighter
+                            action="underline"
+                            color="#7C3AED"
+                            strokeWidth={3}
+                            animationDuration={800}
+                            isView
+                        >
+                            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                                Why Is Your Health
+                            </span>
+                        </Highlighter>
+
                         <br />
-                        <span className="text-slate-900">Optimized Daily</span>
+
+                        <div className="mt-5 inline-block">
+                            <Highlighter
+                                action="highlight"
+                                color="#FFE27A"
+                                strokeWidth={2}
+                                animationDuration={1200}
+                                isView
+                            >
+                                <span className="text-slate-900">
+                                    the Most Valuable Wealth?
+                                </span>
+                            </Highlighter>
+                        </div>
                     </motion.h1>
 
-                    <motion.p
-                        variants={fadeInUp}
-                        className="text-xl md:text-2xl text-slate-600 mb-12 max-w-3xl mx-auto leading-relaxed"
-                    >
-                        AI-powered fitness tracking, personalized nutrition, and mental wellness
-                        all in one beautiful app. Start your transformation today.
-                    </motion.p>
+                    {/* Animated Subtitle */}
+                    <div className="max-w-3xl mx-auto text-center mt-6">
+                        <TextGenerateEffect
+                            words="Because without good health, we cannot work, dream, or enjoy life. Your body and mind are the engines of your success — protecting them means protecting your future. Build strong habits today, and your future self will thank you."
+                            className="text-center"
+                            duration={1}
+                        />
+                    </div>
 
-                    <motion.div
-                        variants={fadeInUp}
-                        className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
-                    >
-                        <motion.button
-                            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all flex items-center justify-center gap-2"
-                            whileHover={{ scale: 1.05, y: -2 }}
-                            whileTap={{ scale: 0.95 }}
-                        >
-                            <Zap className="w-5 h-5" />
-                            Start Free Trial
-                            <ArrowRight className="w-5 h-5" />
-                        </motion.button>
-
-                        <motion.button
-                            className="px-8 py-4 bg-white border-2 border-slate-300 text-slate-700 rounded-2xl font-semibold text-lg hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
-                            whileHover={{ scale: 1.05, y: -2 }}
-                            whileTap={{ scale: 0.95 }}
-                        >
-                            <Activity className="w-5 h-5" />
-                            See How It Works
-                        </motion.button>
-                    </motion.div>
-
-                    {/* Benefits Pills */}
-                    <motion.div
-                        variants={fadeInUp}
-                        className="flex flex-wrap gap-3 justify-center"
-                    >
-                        {benefits.map((benefit, index) => (
-                            <motion.div
-                                key={index}
-                                className="flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full border border-slate-200 shadow-sm"
-                                whileHover={{ scale: 1.05, y: -2 }}
-                            >
-                                <CheckCircle className="w-4 h-4 text-green-500" />
-                                <span className="text-sm font-medium text-slate-700">{benefit}</span>
-                            </motion.div>
-                        ))}
-                    </motion.div>
                 </motion.div>
             </motion.div>
 
