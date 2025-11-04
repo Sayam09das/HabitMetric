@@ -88,7 +88,7 @@ const Navbar = () => {
                                 </motion.button>
                             </Link>
 
-                            <Link to="/signup">
+                            <Link to="/register">
                                 <motion.button
                                     className="px-6 py-2.5 rounded-lg bg-[#4F46E5] text-white hover:bg-[#6366F1] transition-all shadow-lg shadow-[#4F46E5]/20 font-medium cursor-pointer"
                                     whileHover={{ scale: 1.05 }}
@@ -168,10 +168,10 @@ const Navbar = () => {
                                 <div className="border-t border-[#E2E8F0] my-4" />
 
                                 {/* Mobile Auth Buttons */}
-                                <div className="space-y-3">
+                                <div className="flex flex-col gap-4 w-full px-4 py-4 sm:hidden">
                                     <Link to="/login">
                                         <motion.button
-                                            className="w-full px-6 py-3 rounded-lg border-2 border-[#E2E8F0] text-[#1E293B] hover:bg-[#EEF2FF] transition-all font-medium cursor-pointer"
+                                            className="w-full px-5 py-3 rounded-xl border border-[#CBD5E1] text-[#0F172A] text-base font-semibold bg-white hover:bg-[#F8FAFC] active:scale-[0.98] transition-all shadow-sm"
                                             whileTap={{ scale: 0.98 }}
                                             onClick={() => setIsOpen(false)}
                                         >
@@ -179,9 +179,9 @@ const Navbar = () => {
                                         </motion.button>
                                     </Link>
 
-                                    <Link to="/signup">
+                                    <Link to="/register">
                                         <motion.button
-                                            className="w-full px-6 py-3 rounded-lg bg-[#4F46E5] text-white hover:bg-[#6366F1] transition-all shadow-lg shadow-[#4F46E5]/20 font-medium cursor-pointer"
+                                            className="w-full px-5 py-3 rounded-xl bg-[#4F46E5] text-white text-base font-semibold hover:bg-[#6366F1] active:scale-[0.98] transition-all shadow-lg shadow-[#4F46E5]/30"
                                             whileTap={{ scale: 0.98 }}
                                             onClick={() => setIsOpen(false)}
                                         >
@@ -189,6 +189,7 @@ const Navbar = () => {
                                         </motion.button>
                                     </Link>
                                 </div>
+
 
 
                                 {/* Extra Info */}
