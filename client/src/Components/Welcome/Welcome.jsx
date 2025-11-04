@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Brain, Target, TrendingUp, Zap, BarChart3, Trophy } from 'lucide-react';
+import { TypingAnimation } from "@/components/ui/typing-animation"
 
 const Welcome = () => {
     const [isVisible, setIsVisible] = useState(false);
@@ -46,13 +47,23 @@ const Welcome = () => {
                         animate="visible"
                     >
                         <motion.h1
-                            className="text-6xl md:text-7xl font-bold mb-6 leading-tight text-[#1E293B]"
+                            className="text-5xl md:text-7xl font-extrabold mb-6 leading-[1.05] text-[#0F1724]"
                             variants={fadeInUp}
                             transition={{ duration: 0.8 }}
                         >
-                            Build Better
-                            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#4F46E5] to-[#6366F1]">
-                                Habits with Data
+                            Build Better{" "}
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4F46E5] to-[#6366F1]">
+                                <TypingAnimation
+                                    as="span"
+                                    words={["Habits", "Routines", "Discipline", "Consistency", "Momentum"]}
+                                    typeSpeed={80}
+                                    deleteSpeed={45}
+                                    pauseDelay={1000}
+                                    loop={true}
+                                    showCursor={true}
+                                    cursorStyle="line"
+                                    className="inline-block"
+                                />
                             </span>
                         </motion.h1>
                         <motion.p
