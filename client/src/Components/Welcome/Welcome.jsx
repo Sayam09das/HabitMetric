@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { WordRotate } from "../../Components/ui/word-rotate"
-import { SmoothRise } from "@/components/ui/SmoothRise.tsx"
+import { WordRotate } from "@/Components/ui/word-rotate"
+import { SmoothRise } from "@/Components/ui/SmoothRise.tsx"
 import HealthMotionPage from './HealthMotionPage';
 import About from '../About/About';
 import Contact from '../Contact/Contact';

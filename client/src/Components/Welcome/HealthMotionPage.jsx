@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Heart, Activity, TrendingUp, Award, Zap, Target, Calendar, BarChart3, Brain, Dumbbell, Apple, Sparkles, ArrowRight, CheckCircle, Timer, Users, Star } from 'lucide-react';
-import { Highlighter } from "@/components/ui/highlighter"
+import { Highlighter } from "@/Components/ui/highlighter"
 import { TextGenerateEffect } from "../ui/text-generate-effect";
 
 const HealthMotionPage = () => {
