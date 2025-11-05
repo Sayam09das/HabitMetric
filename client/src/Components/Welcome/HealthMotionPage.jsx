@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Heart, Activity, TrendingUp, Award, Zap, Target, Calendar, BarChart3, Brain, Dumbbell, Apple, Sparkles, ArrowRight, CheckCircle, Timer, Users, Star } from 'lucide-react';
 import { Highlighter } from "@/Components/ui/highlighter"
 import { TextGenerateEffect } from "../ui/text-generate-effect";
+import { NumberTicker } from "@/components/ui/number-ticker"
 
 const HealthMotionPage = () => {
     const { scrollYProgress } = useScroll();
@@ -70,11 +71,12 @@ const HealthMotionPage = () => {
     ];
 
     const stats = [
-        { number: "50K+", label: "Active Users", icon: Users },
-        { number: "1M+", label: "Workouts Completed", icon: Dumbbell },
-        { number: "95%", label: "Goal Success Rate", icon: Target },
-        { number: "4.9", label: "App Rating", icon: Star }
+        { number: 50000, label: "Active Users", icon: Users, suffix: "+" },
+        { number: 1000000, label: "Workouts Completed", icon: Dumbbell, suffix: "+" },
+        { number: 95, label: "Goal Success Rate", icon: Target, suffix: "%" },
+        { number: 4.9, label: "App Rating", icon: Star, suffix: "" }
     ];
+
 
     const benefits = [
         "AI-powered personalized recommendations",
@@ -208,34 +210,43 @@ const HealthMotionPage = () => {
                 </motion.div>
             </motion.div>
 
-            {/* Stats Section */}
-            <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className="relative z-10 py-16 px-4"
-            >
-                <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-                    {stats.map((stat, index) => (
+            <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
+                {stats.map((stat, index) => (
+                    <motion.div
+                        key={index}
+                        className="text-center"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.1, duration: 0.5 }}
+                        whileHover={{ scale: 1.05 }}
+                    >
                         <motion.div
-                            key={index}
-                            className="text-center"
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1, duration: 0.5 }}
-                            whileHover={{ scale: 1.05 }}
+                            whileHover={{ scale: 1.12, boxShadow: "0 0 20px rgba(99,102,241,0.6)" }}
+                            transition={{ duration: 0.3 }}
+                            className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl mb-4 shadow-lg"
                         >
-                            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl mb-4 shadow-lg">
-                                <stat.icon className="w-8 h-8 text-white" />
-                            </div>
-                            <div className="text-4xl font-bold text-slate-900 mb-2">{stat.number}</div>
-                            <div className="text-slate-600 font-medium">{stat.label}</div>
+                            <stat.icon className="w-8 h-8 text-white" />
                         </motion.div>
-                    ))}
-                </div>
-            </motion.div>
+
+
+                        {/* Number Animation */}
+                        <div className="text-4xl font-bold text-slate-900 mb-2 flex justify-center">
+                            <NumberTicker
+                                value={stat.number}
+                                startValue={0}
+                                decimalPlaces={stat.number % 1 !== 0 ? 1 : 0}
+                                delay={0.1 * index}
+                                className="text-4xl font-bold"
+                            />
+                            <span className="ml-1">{stat.suffix}</span>
+                        </div>
+
+                        <div className="text-slate-600 font-medium">{stat.label}</div>
+                    </motion.div>
+                ))}
+            </div>
+
 
             {/* Features Section */}
             <motion.div
