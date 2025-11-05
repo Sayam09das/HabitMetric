@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Heart, Activity, TrendingUp, Award, Zap, Target, Calendar, BarChart3, Brain, Dumbbell, Apple, Sparkles, ArrowRight, CheckCircle, Timer, Users, Star } from 'lucide-react';
 import { Highlighter } from "@/Components/ui/highlighter"
 import { TextGenerateEffect } from "../ui/text-generate-effect";
-import { NumberTicker } from "@/components/ui/number-ticker"
+import { NumberTicker } from "@/Components/ui/number-ticker"
 
 const HealthMotionPage = () => {
     const { scrollYProgress } = useScroll();
