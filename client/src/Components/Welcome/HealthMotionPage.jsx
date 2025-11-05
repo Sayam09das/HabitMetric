@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Heart, Activity, TrendingUp, Award, Zap, Target, Calendar, BarChart3, Brain, Dumbbell, Apple, Sparkles, ArrowRight, CheckCircle, Timer, Users, Star } from 'lucide-react';
 import { Highlighter } from "@/Components/ui/highlighter"
 import { TextGenerateEffect } from "../ui/text-generate-effect";
-import { NumberTicker } from "@/Components/ui/number-ticker"
+import { NumberTicker } from "@/Components/ui/number-ticker";
 
 const HealthMotionPage = () => {
     const { scrollYProgress } = useScroll();
@@ -292,62 +292,6 @@ const HealthMotionPage = () => {
                 </div>
             </motion.div>
 
-            {/* CTA Section */}
-            <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="relative z-10 py-24 px-4"
-            >
-                <div className="max-w-4xl mx-auto">
-                    <motion.div
-                        className="bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 rounded-3xl p-12 md:p-16 text-center shadow-2xl relative overflow-hidden"
-                        whileHover={{ scale: 1.02 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent" />
-                        <motion.div
-                            className="absolute top-10 right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"
-                            animate={{
-                                scale: [1, 1.2, 1],
-                                opacity: [0.3, 0.5, 0.3]
-                            }}
-                            transition={{
-                                duration: 4,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                            }}
-                        />
-
-                        <div className="relative z-10">
-                            <motion.div
-                                initial={{ scale: 0 }}
-                                whileInView={{ scale: 1 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.2, type: "spring" }}
-                            >
-                                <Award className="w-20 h-20 text-white mx-auto mb-6" />
-                            </motion.div>
-                            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                                Ready to Transform Your Life?
-                            </h2>
-                            <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                                Join thousands of people who have already started their journey to better health
-                            </p>
-                            <motion.button
-                                className="px-10 py-5 bg-white text-purple-600 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl transition-all inline-flex items-center gap-3"
-                                whileHover={{ scale: 1.05, y: -2 }}
-                                whileTap={{ scale: 0.95 }}
-                            >
-                                <Sparkles className="w-6 h-6" />
-                                Get Started Now - It's Free
-                                <ArrowRight className="w-6 h-6" />
-                            </motion.button>
-                            <p className="text-white/80 text-sm mt-4">No credit card required • 14-day free trial</p>
-                        </div>
-                    </motion.div>
-                </div>
-            </motion.div>
 
             {/* Floating Decorative Elements */}
             <motion.div

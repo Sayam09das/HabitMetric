@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Brain, Target, Users, Zap, Heart, Award, TrendingUp, Shield } from 'lucide-react';
+import { MacbookScroll } from '@/Components/ui/macbook-scroll';
 
 const About = () => {
   const fadeInUp = {
@@ -82,7 +83,7 @@ const About = () => {
   return (
     <div className="min-h-screen bg-[#F9FAFB]">
       {/* Hero Section */}
-      <motion.section 
+      <motion.section
         className="relative bg-gradient-to-br from-[#4F46E5] to-[#6366F1] text-white py-20 md:py-32 overflow-hidden"
         initial="hidden"
         animate="visible"
@@ -114,7 +115,7 @@ const About = () => {
         />
 
         <div className="container mx-auto px-6 relative z-10">
-          <motion.div 
+          <motion.div
             className="max-w-4xl mx-auto text-center"
             variants={fadeInUp}
             transition={{ duration: 0.8 }}
@@ -138,6 +139,79 @@ const About = () => {
           </motion.div>
         </div>
       </motion.section>
+
+      {/* MacbookScroll Section */}
+      <section className="bg-[#F9FAFB]">
+        <MacbookScroll
+          src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=1200&q=80"
+          showGradient={false}
+          title={
+            <span className="bg-gradient-to-r from-[#4F46E5] to-[#10B981] bg-clip-text text-transparent">
+              Experience AI-Powered <br />
+              Habit Building Like Never Before
+            </span>
+          }
+        />
+      </section>
+
+      {/* Additional Features Section */}
+      <section className="bg-white py-20 mt-90">
+        <div className="container mx-auto px-6">
+          <div className="grid md:grid-cols-3 gap-8">
+            <motion.div
+              className="p-8 rounded-2xl border border-[#E2E8F0] bg-white hover:shadow-lg transition-shadow"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#4F46E5] to-[#6366F1] flex items-center justify-center mb-4">
+                <Brain className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-[#1E293B] mb-3">AI-Powered Insights</h3>
+              <p className="text-[#475569]">
+                Get personalized recommendations and insights based on your unique habits and goals.
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="p-8 rounded-2xl border border-[#E2E8F0] bg-white hover:shadow-lg transition-shadow"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-[#1E293B] mb-3">Track Progress</h3>
+              <p className="text-[#475569]">
+                Monitor your daily streaks and celebrate milestones with beautiful visualizations.
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="p-8 rounded-2xl border border-[#E2E8F0] bg-white hover:shadow-lg transition-shadow"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+            >
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#6366F1] to-[#4F46E5] flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-[#1E293B] mb-3">Smart Reminders</h3>
+              <p className="text-[#475569]">
+                Never miss a habit with intelligent notifications that adapt to your routine.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
 
       {/* Mission Statement */}
       <section className="py-20 md:py-28">
@@ -227,7 +301,7 @@ const About = () => {
                 variants={fadeInUp}
                 whileHover={{ y: -5 }}
               >
-                <div 
+                <div
                   className="w-14 h-14 rounded-xl flex items-center justify-center mb-6 shadow-lg"
                   style={{
                     background: `linear-gradient(135deg, ${value.color}, ${value.color}dd)`,
