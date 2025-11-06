@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { MotionValue, motion, useScroll, useTransform } from "motion/react";
-import { cn } from "@/lib/utils";
 import {
   IconBrightnessDown,
   IconBrightnessUp,
@@ -17,13 +16,14 @@ import {
   IconVolume,
   IconVolume2,
   IconVolume3,
+  IconSearch,
+  IconWorld,
+  IconCommand,
+  IconCaretLeftFilled,
+  IconCaretDownFilled,
 } from "@tabler/icons-react";
-import { IconSearch } from "@tabler/icons-react";
-import { IconWorld } from "@tabler/icons-react";
-import { IconCommand } from "@tabler/icons-react";
-import { IconCaretLeftFilled } from "@tabler/icons-react";
-import { IconCaretDownFilled } from "@tabler/icons-react";
 
+const cn = (...classes: any[]) => classes.filter(Boolean).join(" ");
 
 export const MacbookScroll = ({
   src,
@@ -50,9 +50,6 @@ export const MacbookScroll = ({
     }
   }, []);
 
-  // SCROLL HEIGHT CONTROL: Adjust these values to control scaling animation
-  // [0, 0.3] = animation completes at 30% scroll progress
-  // Increase second value (e.g., 0.5) for slower animation
   const scaleX = useTransform(
     scrollYProgress,
     [0, 0.3],
@@ -64,34 +61,22 @@ export const MacbookScroll = ({
     [0.6, isMobile ? 1 : 1.5],
   );
 
-  // VERTICAL MOVEMENT: Controls how far the laptop moves down
-  // Reduce the second value (e.g., 400) for less movement
   const translate = useTransform(scrollYProgress, [0, 1], [0, 500]);
-
-  // ROTATION ANGLE: Controls the laptop opening angle
-  // [-28, -28, 0] = starts at -28deg and opens to 0deg (flat)
-  // Change -28 to -20 for less dramatic opening
   const rotate = useTransform(scrollYProgress, [0.1, 0.12, 0.3], [-28, -28, 0]);
-
-  // TEXT ANIMATION: Controls title fade out
   const textTransform = useTransform(scrollYProgress, [0, 0.3], [0, 100]);
   const textOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
 
   return (
     <div
       ref={ref}
-      // MAIN HEIGHT CONTROL: 
-      // min-h-[60vh] = 60% of viewport height (REDUCED from 100vh)
-      // Change to 40vh, 50vh, or 80vh to adjust total scroll area
-      // md:py-20 = padding on desktop (REDUCED from 40)
-      className="flex min-h-[80vh] shrink-0 scale-[0.35] transform flex-col items-center justify-start py-0 [perspective:800px] sm:scale-50 md:scale-100 md:py-40"
+      className="flex min-h-[80vh] shrink-0 scale-[0.6] transform flex-col items-center justify-start py-10 [perspective:800px] sm:scale-75 md:scale-90 lg:scale-100 md:py-40"
     >
       <motion.h2
         style={{
           translateY: textTransform,
           opacity: textOpacity,
         }}
-        className="mb-20 text-center text-3xl font-bold text-neutral-800 dark:text-white"
+        className="mb-10 text-center text-xl font-bold text-neutral-800 dark:text-white sm:text-2xl md:text-3xl md:mb-20"
       >
         {title || (
           <span>
@@ -150,7 +135,6 @@ export const Lid = ({
 }) => {
   return (
     <div className="relative [perspective:800px]">
-      {/* CLOSED LID: The back of the laptop when closed */}
       <div
         style={{
           transform: "perspective(800px) rotateX(-25deg) translateZ(0px)",
@@ -171,7 +155,6 @@ export const Lid = ({
         </div>
       </div>
 
-      {/* SCREEN: The animated opening screen with your content */}
       <motion.div
         style={{
           scaleX: scaleX,
@@ -184,10 +167,9 @@ export const Lid = ({
         className="absolute inset-0 h-96 w-[32rem] rounded-2xl bg-[#010101] p-2"
       >
         <div className="absolute inset-0 rounded-lg bg-[#272729]" />
-        {/* YOUR CONTENT IMAGE: Replace src with your app screenshot */}
         <img
-          src={src as string}
-          alt="aceternity logo"
+          src={src || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80"}
+          alt="screen content"
           className="absolute inset-0 h-full w-full rounded-lg object-cover object-left-top"
         />
       </motion.div>
@@ -251,7 +233,7 @@ export const Keypad = () => {
         </KBtn>
         <KBtn>
           <IconPlayerTrackNext className="h-[6px] w-[6px]" />
-          <span className="mt-1 inline-block">F8</span>
+          <span className="mt-1 inline-block">F9</span>
         </KBtn>
         <KBtn>
           <IconVolume3 className="h-[6px] w-[6px]" />
@@ -673,3 +655,24 @@ const AceternityLogo = () => {
     </svg>
   );
 };
+
+// Demo Component
+export default function App() {
+  return (
+    <div className="bg-black min-h-screen overflow-x-hidden">
+      <MacbookScroll
+        title={
+          <span>
+            Stunning MacBook Animation <br />
+            Perfectly Responsive Across All Devices
+          </span>
+        }
+        src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&q=80"
+        showGradient={false}
+      />
+      <div className="h-screen bg-gradient-to-b from-black to-neutral-900 flex items-center justify-center">
+        <p className="text-white text-2xl">Scroll to see the animation!</p>
+      </div>
+    </div>
+  );
+}
