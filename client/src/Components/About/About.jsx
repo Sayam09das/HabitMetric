@@ -1,8 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Brain, Target, Users, Zap, Heart, Award, TrendingUp, Shield } from 'lucide-react';
-import { MacbookScroll } from '@/Components/ui/macbook-scroll';
-
+// import {CardStack} from '../'
 const About = () => {
   const fadeInUp = {
     hidden: { opacity: 0, y: 60 },
@@ -140,22 +139,8 @@ const About = () => {
         </div>
       </motion.section>
 
-      {/* MacbookScroll Section */}
-      <section className="bg-[#F9FAFB]">
-        <MacbookScroll
-          src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=1200&q=80"
-          showGradient={false}
-          title={
-            <span className="bg-gradient-to-r from-[#4F46E5] to-[#10B981] bg-clip-text text-transparent">
-              Experience AI-Powered <br />
-              Habit Building Like Never Before
-            </span>
-          }
-        />
-      </section>
-
       {/* Additional Features Section */}
-      <section className="bg-white py-20 mt-90">
+      <section className="bg-white py-20 mt-20">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-8">
             <motion.div

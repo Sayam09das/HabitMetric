@@ -12,12 +12,13 @@ import Footer from './Pages/Footer/Footer.jsx'
 
 import Login from './Auth/Login/Login.jsx'
 import Register from './Auth/Register/Register.jsx'
+import Dashboard from './Dashboard/Dashboard.jsx'
 
 const App = () => {
   const location = useLocation()
 
   // Routes where navbar & footer should NOT show
-  const hideLayoutRoutes = ['/login', '/register']
+  const hideLayoutRoutes = ['/login', '/register', '/dashboard']
 
   const hideLayout = hideLayoutRoutes.includes(location.pathname)
 
@@ -35,6 +36,8 @@ const App = () => {
         {/* Auth pages */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+        <Route path='/dashboard' element={<Dashboard />} />
       </Routes>
 
       {!hideLayout && <Footer />}
