@@ -8,6 +8,12 @@ import Checkin from "./Sections/Checkin";
 import MoodTracker from "./Sections/MoodTracker";
 import Analytics from "./Sections/Analytics";
 import Settings from "./Sections/Settings";
+import Profile from "./Profile/Profile";
+import Account from "./Profile/Account";
+import Notifications from "./Profile/Notifications";
+import Appearance from "./Profile/Appearance";
+import Privacy from "./Profile/Privacy";
+import Billing from "./Profile/Billing";
 import COLORS from "./data/colors";
 
 export default function DashboardShell() {
@@ -48,6 +54,12 @@ export default function DashboardShell() {
             <Route path="checkin" element={<Checkin initialHabits={initialHabits} initialCheckins={todayCheckins} onUpdate={setTodayCheckins} />} />
             <Route path="mood" element={<MoodTracker initialMood={"😊"} initialHistory={[]} />} />
             <Route path="analytics" element={<Analytics habits={initialHabits} todayCheckins={todayCheckins} weeklyProgress={weeklyProgress} />} />
+            <Route path="profile/profile" element={<Profile />} />
+            <Route path="profile/account" element={<Account />} />
+            <Route path="profile/notifications" element={<Notifications />} />
+            <Route path="profile/appearance" element={<Appearance />} />
+            <Route path="profile/privacy" element={<Privacy />} />
+            <Route path="profile/billing" element={<Billing />} />
             <Route path="settings" element={<Settings user={user} />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>

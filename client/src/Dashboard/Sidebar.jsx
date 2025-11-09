@@ -7,6 +7,11 @@ import {
     TrendingUp,
     Settings,
     X,
+    User,
+    Shield,
+    Bell,
+    Lock,
+    CreditCard
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import NavItem from "./Components/NavItem";
@@ -47,6 +52,42 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
             label: "Analytics",
             icon: TrendingUp,
             ariaLabel: "Navigate to Analytics",
+        },
+        {
+            to: "/dashboard/profile/profile",
+            label: "Profile",
+            icon: User,
+            ariaLabel: "Navigate to Profile",
+        },
+        {
+            to: "/dashboard/profile/account",
+            label: "Account",
+            icon: Shield,
+            arialLavel: "Navgiate to account",
+        },
+        {
+            to: "/dashboard/profile/notifications",
+            label: "Notifications",
+            icon: Bell,
+            ariaLabel: "Navgiate to Notifications",
+        },
+        {
+            to: "/dashboard/profile/appearance",
+            label: "Appearance",
+            icon: Bell,
+            ariaLabel: "Navgiate to Appearance",
+        },
+        {
+            to: "/dashboard/profile/privacy",
+            label: "Privacy",
+            icon: Lock,
+            ariaLabel: "Navigate to Privacy",
+        },
+        {
+            to: "/dashboard/profile/billing",
+            label: "Billing",
+            icon: CreditCard,
+            ariaLabel: "Navigate to Billing",
         },
         {
             to: "/dashboard/settings",

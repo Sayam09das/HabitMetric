@@ -22,6 +22,12 @@ import Checkin from "./Dashboard/Sections/Checkin.jsx";
 import MoodTracker from "./Dashboard/Sections/MoodTracker.jsx";
 import Analytics from "./Dashboard/Sections/Analytics.jsx";
 import Settings from "./Dashboard/Sections/Settings.jsx";
+import Profile from "./Dashboard/Profile/Profile.jsx";
+import Account from "./Dashboard/Profile/Account.jsx";
+import Notifications from "./Dashboard/Profile/Notifications.jsx";
+import Appearance from "./Dashboard/Profile/Appearance.jsx";
+import Privacy from "./Dashboard/Profile/Privacy.jsx";
+import Billing from "./Dashboard/Profile/Billing.jsx";
 
 const App = () => {
   const location = useLocation();
@@ -56,6 +62,12 @@ const App = () => {
           <Route path="mood" element={<MoodTracker />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="/dashboard/profile/profile" element={<Profile />} />
+          <Route path="/dashboard/profile/account" element={<Account />} />
+          <Route path="/dashboard/profile/notifications" element={<Notifications />} />
+          <Route path="/dashboard/profile/appearance" element={<Appearance />} />
+          <Route path="/dashboard/profile/privacy" element={<Privacy />} />
+          <Route path="/dashboard/profile/billing" element={<Billing />} />
         </Route>
       </Routes>
 
