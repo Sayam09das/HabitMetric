@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { Link } from "react-router-dom";
 import { WordRotate } from "@/Components/ui/word-rotate"
 import { SmoothRise } from "@/Components/ui/SmoothRise.tsx"
 import HealthMotionPage from './HealthMotionPage';
@@ -104,9 +105,7 @@ const Welcome = () => {
                 ))}
             </div>
 
-            {/* Hero Content */}
-            <div className="flex items-center justify-center min-h-[80vh] relative z-10">
-
+            <div className="flex items-center justify-center min-h-[80vh] relative z-10 mt-20">
                 <motion.div
                     variants={staggerContainer}
                     initial="hidden"
@@ -128,10 +127,8 @@ const Welcome = () => {
                         </span>
                     </motion.h1>
 
-
                     <SmoothRise text="Build disciplined habits with AI guidance, clear insights, and a system designed for real, lasting progress." />
 
-                    {/* Benefits Pills */}
                     <motion.div
                         variants={fadeInUp}
                         className="flex flex-wrap gap-3 justify-center mt-6 mb-8 px-4"
@@ -139,7 +136,7 @@ const Welcome = () => {
                         {benefits.map((benefit, index) => (
                             <motion.div
                                 key={index}
-                                className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-slate-200 shadow-[0_2px_6px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-all"
+                                className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-slate-200 shadow-[0_2px_6px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-all cursor-pointer"
                                 whileHover={{ scale: 1.05 }}
                             >
                                 <CheckCircle className="w-4 h-4 text-green-500" />
@@ -150,33 +147,34 @@ const Welcome = () => {
                         ))}
                     </motion.div>
 
-                    {/* CTA Buttons */}
                     <motion.div
                         className="flex flex-col sm:flex-row gap-4 justify-center w-full px-6 sm:px-0 mb-6"
                         variants={fadeInUp}
                         transition={{ duration: 0.8, delay: 0.3 }}
                     >
-                        <motion.button
-                            className="w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 rounded-2xl bg-[#4F46E5] text-white text-base sm:text-lg font-semibold hover:bg-[#554bf7] active:scale-[0.97] transition-all shadow-lg shadow-[#4F46E5]/30"
-                            whileHover={{ scale: 1.04 }}
-                            whileTap={{ scale: 0.97 }}
-                        >
-                            Get Started Free
-                        </motion.button>
+                        <Link href="/login">
+                            <motion.button
+                                className="w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 rounded-2xl bg-[#4F46E5] text-white text-base sm:text-lg font-semibold hover:bg-[#554bf7] active:scale-[0.97] transition-all shadow-lg shadow-[#4F46E5]/30 cursor-pointer"
+                                whileHover={{ scale: 1.04 }}
+                                whileTap={{ scale: 0.97 }}
+                            >
+                                Get Started Free
+                            </motion.button>
+                        </Link>
 
-                        <motion.button
-                            className="w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 rounded-2xl border border-slate-300 bg-white text-[#1E293B] text-base sm:text-lg font-semibold hover:bg-[#F8FAFF] active:scale-[0.97] transition-all shadow-sm"
-                            whileHover={{ scale: 1.04 }}
-                            whileTap={{ scale: 0.97 }}
-                        >
-                            Learn More
-                        </motion.button>
+                        <Link href="/about">
+                            <motion.button
+                                className="w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 rounded-2xl border border-slate-300 bg-white text-[#1E293B] text-base sm:text-lg font-semibold hover:bg-[#F8FAFF] active:scale-[0.97] transition-all shadow-sm cursor-pointer"
+                                whileHover={{ scale: 1.04 }}
+                                whileTap={{ scale: 0.97 }}
+                            >
+                                Learn More
+                            </motion.button>
+                        </Link>
                     </motion.div>
-
-
                 </motion.div>
-
             </div>
+
 
             {/* Floating Elements */}
             <motion.div

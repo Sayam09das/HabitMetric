@@ -9,7 +9,7 @@ export const SmoothRise: React.FC<SmoothRiseProps> = ({ text, delay = 0.15 }) =>
     const words = text.split(" ");
 
     return (
-        <p className="text-2xl text-[#475569] mb-12 leading-relaxed max-w-3xl mx-auto text-center">
+        <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-[#475569] mb-12 leading-relaxed max-w-3xl mx-auto text-center">
             {words.map((word, i) => (
                 <motion.span
                     key={i}

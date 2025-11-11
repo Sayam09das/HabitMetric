@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Brain, Target, Users, Zap, Heart, Award, TrendingUp, Shield } from 'lucide-react';
-// import {CardStack} from '../'
+import { CardStack } from '../ui/card-stack'
 const About = () => {
   const fadeInUp = {
     hidden: { opacity: 0, y: 60 },
@@ -17,6 +17,38 @@ const About = () => {
       }
     }
   };
+  const missionCards = [
+    {
+      id: 1,
+      name: "Personalized Growth",
+      designation: "AI Habit Insights",
+      content: (
+        <p>
+          We tailor habit-building strategies to your behavior, helping you grow smarter, not harder.
+        </p>
+      ),
+    },
+    {
+      id: 2,
+      name: "Behavioral Science",
+      designation: "Proven Frameworks",
+      content: (
+        <p>
+          Our methods combine psychology and habit science to reinforce lasting positive change.
+        </p>
+      ),
+    },
+    {
+      id: 3,
+      name: "Meaningful Progress",
+      designation: "Small Daily Wins",
+      content: (
+        <p>
+          Because sustainable growth happens through tiny improvements repeated consistently.
+        </p>
+      ),
+    },
+  ];
 
   const values = [
     {
