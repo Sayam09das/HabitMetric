@@ -75,26 +75,65 @@ export default function Navbar({ sidebarOpen, setSidebarOpen, user: propUser = n
     };
 
     useEffect(() => {
-        if (propUser) return;
+        if (propUser) {
+            setUser(propUser);
+            return;
+        }
 
         let cancelled = false;
+
         const fetchProfile = async () => {
             try {
-                const token = localStorage.getItem("token");
-                const resp = await axios.get(`${API_ORIGIN}/protected/profile`, {
-                    withCredentials: true,
-                    timeout: 15000,
-                    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-                });
+                // mark loading
+                setUser(null);
 
-                if (!cancelled) {
-                    setUser(resp.data?.user ?? resp.data ?? null);
+                // rely on interceptor in main.jsx to attach Authorization header
+                const resp = await axios.get(`${API_ORIGIN}/protected/profile`, { withCredentials: true, timeout: 15000 });
+
+                if (cancelled) return;
+
+                const resolved = resp.data?.user ?? (resp.data && (resp.data.name || resp.data.email) ? resp.data : null);
+                if (resolved) {
+                    setUser(resolved);
+                    return;
                 }
+
+                // fallback: decode token (non-critical)
+                const token = localStorage.getItem("token");
+                if (token) {
+                    try {
+                        const clean = token.startsWith('"') && token.endsWith('"') ? token.slice(1, -1) : token;
+                        const payload = JSON.parse(atob(clean.split(".")[1]));
+                        setUser({ name: payload.name ?? payload.email ?? "User", email: payload.email ?? "" });
+                        return;
+                    } catch (e) {
+                        // ignore decode error
+                    }
+                }
+
+                setUser({ name: "User", email: "no-email@example.com" });
             } catch (err) {
-                console.error("Failed to fetch profile:", err);
-                if (!cancelled) {
-                    setUser({ name: "User", email: "no-email@example.com" });
+                const status = err?.response?.status;
+                // if invalid token, clear token to force a fresh login
+                if (status === 401 || status === 403) {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("refreshToken");
+                    // do not auto-redirect in production here; let auth flow handle it
                 }
+
+                // try token decode fallback
+                const token = localStorage.getItem("token");
+                if (token) {
+                    try {
+                        const clean = token.startsWith('"') && token.endsWith('"') ? token.slice(1, -1) : token;
+                        const payload = JSON.parse(atob(clean.split(".")[1]));
+                        setUser({ name: payload.name ?? payload.email ?? "User", email: payload.email ?? "" });
+                        return;
+                    } catch (e) {
+                        // ignore
+                    }
+                }
+                setUser({ name: "User", email: "no-email@example.com" });
             }
         };
 
@@ -104,9 +143,10 @@ export default function Navbar({ sidebarOpen, setSidebarOpen, user: propUser = n
         };
     }, [propUser]);
 
-    // Safe display values (always strings)
-    const displayName = user?.name ?? "User";
-    const displayEmail = user?.email ?? "no-email@example.com";
+    const displayName = user === null ? "Loading…" : (user?.name ?? "User");
+    const displayEmail = user === null ? "" : (user?.email ?? "no-email@example.com");
+
+
     return (
         <header className="sticky top-0 z-50 w-full shadow-sm backdrop-blur-md border-b border-gray-200 bg-white transition-all duration-300">
             <div className="flex items-center justify-between px-3 sm:px-4 lg:px-6 py-2.5 sm:py-3">

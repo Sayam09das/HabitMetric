@@ -14,7 +14,7 @@ import Footer from "./Pages/Footer/Footer.jsx";
 // Auth Pages
 import Login from "./Auth/Login/Login.jsx";
 import Register from "./Auth/Register/Register.jsx";
-import Email from "./Auth/email.jsx"
+import Email from "./Auth/email.jsx";
 
 // Dashboard & Inner Pages
 import DashboardLayout from "./Dashboard/Dashboard.jsx";
@@ -34,9 +34,10 @@ const App = () => {
   const location = useLocation();
 
   // Hide navbar & footer on these routes
-  const hideLayoutRoutes = ["/login", "/register", "/dashboard", "/verify-email"];
+  const hideLayoutRoutes = ["/login", "/register", "/verify-email"];
   const hideLayout =
     hideLayoutRoutes.includes(location.pathname) ||
+    location.pathname === "/dashboard" ||
     location.pathname.startsWith("/dashboard/");
 
   return (
@@ -56,20 +57,22 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email" element={<Email />} />
 
-        {/* Dashboard Routes with nested pages */}
-        <Route path="/dashboard" element={<DashboardLayout />}>
+        {/* Dashboard: either use nested relative paths or delegate to DashboardLayout (choose one).
+            Here we mount DashboardLayout at /dashboard/* so it can manage its own nested routes
+            OR the children below can be matched as nested routes. */}
+        <Route path="/dashboard/*" element={<DashboardLayout />}>
           <Route index element={<Habits />} />
           <Route path="habits" element={<Habits />} />
           <Route path="checkin" element={<Checkin />} />
           <Route path="mood" element={<MoodTracker />} />
           <Route path="analytics" element={<Analytics />} />
-          <Route path="/dashboard/settings" element={<Settings />} />
-          <Route path="/dashboard/profile/profile" element={<Profile />} />
-          <Route path="/dashboard/profile/account" element={<Account />} />
-          <Route path="/dashboard/profile/notifications" element={<Notifications />} />
-          <Route path="/dashboard/profile/appearance" element={<Appearance />} />
-          <Route path="/dashboard/profile/privacy" element={<Privacy />} />
-          <Route path="/dashboard/profile/billing" element={<Billing />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="profile/profile" element={<Profile />} />
+          <Route path="profile/account" element={<Account />} />
+          <Route path="profile/notifications" element={<Notifications />} />
+          <Route path="profile/appearance" element={<Appearance />} />
+          <Route path="profile/privacy" element={<Privacy />} />
+          <Route path="profile/billing" element={<Billing />} />
         </Route>
       </Routes>
 

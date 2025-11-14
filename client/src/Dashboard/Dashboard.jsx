@@ -54,9 +54,16 @@ export default function DashboardLayout() {
 
       <div className="flex">
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <div className="flex-1 p-6 lg:p-8">
+        <main className="flex-1 p-6 lg:p-8">
           <Routes>
-            <Route index element={<Overview habits={initialHabits} todayCheckins={todayCheckins} currentMood={"😊"} weeklyProgress={weeklyProgress} />} />
+            <Route index element={
+              <Overview
+                habits={initialHabits}
+                todayCheckins={todayCheckins}
+                currentMood={"😊"}
+                weeklyProgress={weeklyProgress}
+              />
+            } />
             <Route path="habits" element={<Habits initialHabits={initialHabits} />} />
             <Route path="checkin" element={<Checkin initialHabits={initialHabits} initialCheckins={todayCheckins} onUpdate={setTodayCheckins} />} />
             <Route path="mood" element={<MoodTracker initialMood={"😊"} initialHistory={[]} />} />
@@ -69,7 +76,7 @@ export default function DashboardLayout() {
             <Route path="profile/billing" element={<Billing />} />
             <Route path="settings" element={<Settings />} />
           </Routes>
-        </div>
+        </main>
       </div>
     </div>
   );
