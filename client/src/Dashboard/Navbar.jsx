@@ -10,10 +10,40 @@ import {
     User,
 } from "lucide-react";
 import COLORS from "./data/colors";
+import axios from "axios";
+
+
+const API_ORIGIN = import.meta.env.VITE_PRIVATE_API_URL || "http://localhost:3000";
 
 export default function Navbar({ sidebarOpen, setSidebarOpen, user }) {
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const [showNotification, setShowNotification] = useState(false);
+
+    const logout = async () => {
+        try {
+            await axios.post(
+                `${API_ORIGIN}/auth/logout`,
+                {},
+                {
+                    withCredentials: true, // send cookies if used
+                    timeout: 15000,
+                }
+            );
+
+            // Clear local tokens if any (JWT)
+            localStorage.removeItem("token");
+            localStorage.removeItem("refreshToken");
+
+            // Redirect to login
+            window.location.href = "/login";
+        } catch (err) {
+            console.error("Logout failed:", err);
+            // Even if backend fails, still force logout
+            localStorage.removeItem("token");
+            window.location.href = "/login";
+        }
+    };
+
 
     const getGreeting = () => {
         const hour = new Date().getHours();
@@ -170,12 +200,13 @@ export default function Navbar({ sidebarOpen, setSidebarOpen, user }) {
                                 >
                                     ⚙️ Settings
                                 </Link>
-                                <Link
-                                    to="/logout"
+                                <button
+                                    onClick={logout}
                                     className="block w-full px-3 sm:px-4 py-2 text-left flex items-center gap-2 hover:bg-gray-50 text-xs sm:text-sm text-red-600"
                                 >
                                     <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Logout
-                                </Link>
+                                </button>
+
                             </div>
                         )}
                     </div>
