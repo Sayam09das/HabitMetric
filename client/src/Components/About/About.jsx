@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Brain, Target, Users, Zap, Heart, Award, TrendingUp, Shield } from 'lucide-react';
-import { CardStack } from '../ui/card-stack'
+import { PinContainer } from "../ui/3d-pin";
 const About = () => {
   const fadeInUp = {
     hidden: { opacity: 0, y: 60 },
@@ -17,38 +17,6 @@ const About = () => {
       }
     }
   };
-  const missionCards = [
-    {
-      id: 1,
-      name: "Personalized Growth",
-      designation: "AI Habit Insights",
-      content: (
-        <p>
-          We tailor habit-building strategies to your behavior, helping you grow smarter, not harder.
-        </p>
-      ),
-    },
-    {
-      id: 2,
-      name: "Behavioral Science",
-      designation: "Proven Frameworks",
-      content: (
-        <p>
-          Our methods combine psychology and habit science to reinforce lasting positive change.
-        </p>
-      ),
-    },
-    {
-      id: 3,
-      name: "Meaningful Progress",
-      designation: "Small Daily Wins",
-      content: (
-        <p>
-          Because sustainable growth happens through tiny improvements repeated consistently.
-        </p>
-      ),
-    },
-  ];
 
   const values = [
     {
@@ -86,30 +54,35 @@ const About = () => {
 
   const team = [
     {
-      name: "Sarah Johnson",
-      role: "CEO & Founder",
-      image: "SJ",
-      bio: "Behavioral psychologist passionate about habit formation"
+      image: "SD",
+      name: "Sayam Das",
+      role: "Founder & CEO",
+      bio: "Product thinker. Habit systems nerd.",
+      linkedin: "https://www.linkedin.com/in/sayam-das", // <-- update
     },
     {
-      name: "Michael Chen",
-      role: "CTO",
-      image: "MC",
-      bio: "AI researcher with 10+ years in machine learning"
+      image: "AK",
+      name: "Anika Kapoor",
+      role: "Design Lead",
+      bio: "Crafts calm, intuitive UI.",
+      linkedin: "https://www.linkedin.com/in/anika-kapoor", // <-- update
     },
     {
-      name: "Emily Rodriguez",
-      role: "Head of Design",
-      image: "ER",
-      bio: "UX designer focused on creating delightful experiences"
+      image: "RV",
+      name: "Ravi Verma",
+      role: "ML Engineer",
+      bio: "Models that nudge, not nag.",
+      linkedin: "https://www.linkedin.com/in/ravi-verma", // <-- update
     },
     {
-      name: "David Kim",
-      role: "Lead Data Scientist",
-      image: "DK",
-      bio: "Expert in behavioral analytics and predictive modeling"
-    }
+      image: "JT",
+      name: "Jatin",
+      role: "Frontend Dev",
+      bio: "Framer Motion enjoyer.",
+      linkedin: "https://www.linkedin.com/in/jatin", // <-- update
+    },
   ];
+
 
   return (
     <div className="min-h-screen bg-[#F9FAFB]">
@@ -339,57 +312,28 @@ const About = () => {
         </div>
       </section>
 
-      {/* Team Section */}
       <section className="py-20 md:py-28 bg-white">
         <div className="container mx-auto px-6">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-[#1E293B] mb-4">
-              Meet Our Team
-            </h2>
-            <p className="text-xl text-[#475569] max-w-2xl mx-auto">
-              Passionate experts dedicated to your success
-            </p>
-          </motion.div>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#1E293B] mb-4">Meet Our Team</h2>
+            <p className="text-xl text-[#475569] max-w-2xl mx-auto">Passionate experts dedicated to your success</p>
+          </div>
 
-          <motion.div
-            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8"
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            {team.map((member, index) => (
-              <motion.div
-                key={index}
-                className="bg-[#F9FAFB] rounded-2xl p-6 text-center hover:shadow-xl transition-all border border-[#E2E8F0]"
-                variants={fadeInUp}
-                whileHover={{ y: -10 }}
-              >
-                <motion.div
-                  className="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#4F46E5] to-[#6366F1] flex items-center justify-center text-white text-2xl font-bold shadow-lg"
-                  whileHover={{ rotate: 360 }}
-                  transition={{ duration: 0.6 }}
-                >
-                  {member.image}
-                </motion.div>
-                <h3 className="text-xl font-bold text-[#1E293B] mb-1">
-                  {member.name}
-                </h3>
-                <p className="text-[#4F46E5] font-medium mb-3">
-                  {member.role}
-                </p>
-                <p className="text-sm text-[#475569]">
-                  {member.bio}
-                </p>
-              </motion.div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4">
+            {team.map((member, i) => (
+              <PinContainer key={i} title={member.name} href={member.href} containerClassName="aspect-[4/5]">
+                <div className="w-[15rem] max-w-full">
+                  <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#4F46E5] to-[#6366F1] grid place-items-center text-white text-2xl font-bold shadow-lg">
+                    {member.image}
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-1">{member.name}</h3>
+                  <p className="text-emerald-300 font-medium mb-3">{member.role}</p>
+                  <p className="text-sm text-zinc-300/80">{member.bio}</p>
+                </div>
+              </PinContainer>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Edit2, Trash2, Flame, Plus, Search, Filter, SortAsc, MoreVertical, CheckCircle, Calendar, TrendingUp, Clock, Target, Star, Archive, Copy, Share2, Download, Eye, EyeOff, AlertCircle, Award, Zap, Trophy } from "lucide-react";
 
@@ -14,6 +14,39 @@ export default function Habits({ initialHabits = [], onUpdate }) {
     const [showFilters, setShowFilters] = useState(false);
     const [activeHabitMenu, setActiveHabitMenu] = useState(null);
     const [showArchived, setShowArchived] = useState(false);
+    const [showAddHabit, setShowAddHabit] = useState(false);
+    const [newHabit, setNewHabit] = useState({
+        title: "",
+        category: "Health",
+        frequency: "daily",
+        goal: "",
+        notes: "",
+        color: COLORS.primary || "#3b82f6",
+    });
+
+    const modalVariants = {
+        hidden: { opacity: 0, y: 20, scale: 0.98 },
+        visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 300, damping: 25 } },
+        exit: { opacity: 0, y: 10, scale: 0.98, transition: { duration: 0.18 } },
+    };
+
+    useEffect(() => {
+        if (showAddHabit) {
+            const orig = document.body.style.overflow;
+            document.body.style.overflow = "hidden";
+            return () => (document.body.style.overflow = orig);
+        }
+    }, [showAddHabit]);
+
+    // close on Escape
+    useEffect(() => {
+        const onKey = (e) => {
+            if (e.key === "Escape") setShowAddHabit(false);
+        };
+        if (showAddHabit) window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [showAddHabit]);
+
 
     // Filtering and Sorting Logic
     const filteredAndSortedHabits = useMemo(() => {
@@ -215,6 +248,7 @@ export default function Habits({ initialHabits = [], onUpdate }) {
                             <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
+                                onClick={() => setShowAddHabit(true)}
                                 className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold text-sm sm:text-base hover:shadow-lg hover:shadow-indigo-500/30 transition-all"
                             >
                                 <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -402,6 +436,7 @@ export default function Habits({ initialHabits = [], onUpdate }) {
                             <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
+                                onClick={() => setShowAddHabit(true)}
                                 className="px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-colors"
                             >
                                 Create Your First Habit
@@ -627,6 +662,196 @@ export default function Habits({ initialHabits = [], onUpdate }) {
                     )}
                 </AnimatePresence>
             </div>
+
+            {/* Add Habit Modal */}
+            <AnimatePresence>
+                {showAddHabit && (
+                    <>
+                        {/* Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+                            onClick={() => setShowAddHabit(false)}
+                        />
+
+                        {/* Modal */}
+                        <motion.div
+                            variants={modalVariants}
+                            initial="hidden"
+                            animate="visible"
+                            exit="exit"
+                            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                                {/* Modal Header */}
+                                <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+                                    <h2 className="text-2xl font-bold text-gray-800">Add New Habit</h2>
+                                    <button
+                                        onClick={() => setShowAddHabit(false)}
+                                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                    >
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                {/* Modal Body */}
+                                <div className="p-6 space-y-5">
+                                    {/* Title */}
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Habit Title *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={newHabit.title}
+                                            onChange={(e) => setNewHabit({ ...newHabit, title: e.target.value })}
+                                            placeholder="e.g., Morning Exercise"
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                        />
+                                    </div>
+
+                                    {/* Category */}
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Category
+                                        </label>
+                                        <select
+                                            value={newHabit.category}
+                                            onChange={(e) => setNewHabit({ ...newHabit, category: e.target.value })}
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                        >
+                                            <option value="Health">Health</option>
+                                            <option value="Productivity">Productivity</option>
+                                            <option value="Mindfulness">Mindfulness</option>
+                                            <option value="Social">Social</option>
+                                            <option value="Learning">Learning</option>
+                                            <option value="Finance">Finance</option>
+                                        </select>
+                                    </div>
+
+                                    {/* Frequency */}
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Frequency
+                                        </label>
+                                        <div className="grid grid-cols-3 gap-3">
+                                            {["daily", "weekly", "monthly"].map((freq) => (
+                                                <button
+                                                    key={freq}
+                                                    onClick={() => setNewHabit({ ...newHabit, frequency: freq })}
+                                                    className={`px-4 py-3 rounded-lg font-medium capitalize transition-all ${newHabit.frequency === freq
+                                                            ? "bg-indigo-600 text-white"
+                                                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                                        }`}
+                                                >
+                                                    {freq}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Goal */}
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Goal (Optional)
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={newHabit.goal}
+                                            onChange={(e) => setNewHabit({ ...newHabit, goal: e.target.value })}
+                                            placeholder="e.g., Exercise for 30 minutes"
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                        />
+                                    </div>
+
+                                    {/* Notes */}
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Notes (Optional)
+                                        </label>
+                                        <textarea
+                                            value={newHabit.notes}
+                                            onChange={(e) => setNewHabit({ ...newHabit, notes: e.target.value })}
+                                            placeholder="Add any additional details..."
+                                            rows={3}
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                                        />
+                                    </div>
+
+                                    {/* Color Picker */}
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Color
+                                        </label>
+                                        <div className="flex gap-3 flex-wrap">
+                                            {["#3b82f6", "#10b981", "#8b5cf6", "#f59e0b", "#ec4899", "#14b8a6", "#ef4444"].map((color) => (
+                                                <button
+                                                    key={color}
+                                                    onClick={() => setNewHabit({ ...newHabit, color })}
+                                                    className={`w-10 h-10 rounded-lg transition-all ${newHabit.color === color ? "ring-2 ring-offset-2 ring-gray-800" : ""
+                                                        }`}
+                                                    style={{ backgroundColor: color }}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Modal Footer */}
+                                <div className="sticky bottom-0 bg-gray-50 px-6 py-4 flex items-center justify-end gap-3 rounded-b-2xl border-t border-gray-200">
+                                    <motion.button
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={() => setShowAddHabit(false)}
+                                        className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                                    >
+                                        Cancel
+                                    </motion.button>
+                                    <motion.button
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={() => {
+                                            if (newHabit.title.trim()) {
+                                                const habitToAdd = {
+                                                    id: Date.now(),
+                                                    ...newHabit,
+                                                    streak: 0,
+                                                    bestStreak: 0,
+                                                    completionRate: 0,
+                                                    completedToday: false,
+                                                    archived: false,
+                                                    icon: "🎯",
+                                                    lastCheckin: null
+                                                };
+                                                const updated = [...habits, habitToAdd];
+                                                setHabits(updated);
+                                                onUpdate?.(updated);
+                                                setShowAddHabit(false);
+                                                setNewHabit({
+                                                    title: "",
+                                                    category: "Health",
+                                                    frequency: "daily",
+                                                    goal: "",
+                                                    notes: "",
+                                                    color: COLORS.primary || "#3b82f6",
+                                                });
+                                            }
+                                        }}
+                                        className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-indigo-500/30 transition-all"
+                                    >
+                                        Add Habit
+                                    </motion.button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
         </motion.div>
     );
 }
