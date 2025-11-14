@@ -21,7 +21,6 @@ export default function DashboardShell() {
   const [darkMode, setDarkMode] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-  const user = { name: "Sayam", avatar: "👨‍💻", email: "sayam@example.com" };
   const initialHabits = [
     { id: 1, title: "Morning Exercise", frequency: "Daily", streak: 7, icon: "💪" },
     { id: 2, title: "Read 30 min", frequency: "Daily", streak: 5, icon: "📚" },
