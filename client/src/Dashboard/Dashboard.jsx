@@ -14,6 +14,7 @@ import Notifications from "./Profile/Notifications";
 import Appearance from "./Profile/Appearance";
 import Privacy from "./Profile/Privacy";
 import Billing from "./Profile/Billing";
+import Settings from "./Sections/Settings"
 import COLORS from "./data/colors";
 
 export default function DashboardShell() {
@@ -59,7 +60,7 @@ export default function DashboardShell() {
             <Route path="profile/appearance" element={<Appearance />} />
             <Route path="profile/privacy" element={<Privacy />} />
             <Route path="profile/billing" element={<Billing />} />
-            <Route path="settings" element={<Settings user={user} />} />
+            <Route path="settings" element={<Settings />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </div>
