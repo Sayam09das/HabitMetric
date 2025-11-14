@@ -1,8 +1,8 @@
+// src/Dashboard/Dashboard.jsx
 import React, { useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
-import Overview from "./Sections/Overview"; // keep existing Overview or the one provided earlier
+import Overview from "./Sections/Overview";
 import Habits from "./Sections/Habits";
 import Checkin from "./Sections/Checkin";
 import MoodTracker from "./Sections/MoodTracker";
@@ -14,10 +14,10 @@ import Notifications from "./Profile/Notifications";
 import Appearance from "./Profile/Appearance";
 import Privacy from "./Profile/Privacy";
 import Billing from "./Profile/Billing";
-import Settings from "./Sections/Settings"
 import COLORS from "./data/colors";
+import { Routes, Route } from "react-router-dom";
 
-export default function DashboardShell() {
+export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -29,6 +29,7 @@ export default function DashboardShell() {
     { id: 4, title: "Drink 8 Glasses", frequency: "Daily", streak: 10, icon: "💧" },
     { id: 5, title: "Code Practice", frequency: "Daily", streak: 4, icon: "💻" },
   ];
+
   const [todayCheckins, setTodayCheckins] = useState([1, 2, 4, 5]);
   const weeklyProgress = [
     { day: "Mon", completed: 4 },
@@ -43,10 +44,16 @@ export default function DashboardShell() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: darkMode ? "#0B1220" : COLORS.background }}>
       <Navbar
-        {...{ sidebarOpen, setSidebarOpen, darkMode, setDarkMode, user, showProfileMenu, setShowProfileMenu }}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+        showProfileMenu={showProfileMenu}
+        setShowProfileMenu={setShowProfileMenu}
       />
+
       <div className="flex">
-        <Sidebar {...{ sidebarOpen, setSidebarOpen }} />
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         <div className="flex-1 p-6 lg:p-8">
           <Routes>
             <Route index element={<Overview habits={initialHabits} todayCheckins={todayCheckins} currentMood={"😊"} weeklyProgress={weeklyProgress} />} />
@@ -61,7 +68,6 @@ export default function DashboardShell() {
             <Route path="profile/privacy" element={<Privacy />} />
             <Route path="profile/billing" element={<Billing />} />
             <Route path="settings" element={<Settings />} />
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </div>
       </div>

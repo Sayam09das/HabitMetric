@@ -67,37 +67,32 @@ export default function Navbar({ sidebarOpen, setSidebarOpen, user: propUser = n
         return () => document.head.removeChild(style);
     }, []);
 
-    // Generate initials like "SD"
     const getInitials = (name) => {
         if (!name) return "👤";
-        const words = name.trim().split(" ");
+        const words = name.trim().split(" ").filter(Boolean);
         if (words.length === 1) return words[0][0].toUpperCase();
         return (words[0][0] + words[1][0]).toUpperCase();
     };
 
     useEffect(() => {
-        if (propUser) return; // do nothing if parent provided user
+        if (propUser) return;
 
         let cancelled = false;
         const fetchProfile = async () => {
             try {
-                const token = localStorage.getItem("token"); // optional: if API expects Bearer
+                const token = localStorage.getItem("token");
                 const resp = await axios.get(`${API_ORIGIN}/protected/profile`, {
-                    withCredentials: true, // if using cookies
+                    withCredentials: true,
                     timeout: 15000,
-                    headers: token
-                        ? { Authorization: `Bearer ${token}` }
-                        : undefined,
+                    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
                 });
 
                 if (!cancelled) {
-                    // adjust according to your API shape: resp.data.user or resp.data
                     setUser(resp.data?.user ?? resp.data ?? null);
                 }
             } catch (err) {
                 console.error("Failed to fetch profile:", err);
                 if (!cancelled) {
-                    // fallback user (non-breaking)
                     setUser({ name: "User", email: "no-email@example.com" });
                 }
             }
@@ -109,10 +104,9 @@ export default function Navbar({ sidebarOpen, setSidebarOpen, user: propUser = n
         };
     }, [propUser]);
 
-    // local small helpers
+    // Safe display values (always strings)
     const displayName = user?.name ?? "User";
     const displayEmail = user?.email ?? "no-email@example.com";
-
     return (
         <header className="sticky top-0 z-50 w-full shadow-sm backdrop-blur-md border-b border-gray-200 bg-white transition-all duration-300">
             <div className="flex items-center justify-between px-3 sm:px-4 lg:px-6 py-2.5 sm:py-3">
@@ -163,7 +157,7 @@ export default function Navbar({ sidebarOpen, setSidebarOpen, user: propUser = n
                     <p className="hidden xl:block text-sm text-gray-600 font-medium whitespace-nowrap">
                         {getGreeting()},{" "}
                         <span className="text-indigo-600 font-semibold">
-                            {user.name}
+                            {displayName}
                         </span>{" "}
                         👋
                     </p>
@@ -211,7 +205,8 @@ export default function Navbar({ sidebarOpen, setSidebarOpen, user: propUser = n
                             className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-full hover:bg-gray-100 transition"
                         >
                             <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold text-xs sm:text-sm">
-                                {getInitials(user.name)}
+                                {/* initials from safe displayName */}
+                                {getInitials(displayName)}
                             </div>
                             <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-700" />
                         </button>

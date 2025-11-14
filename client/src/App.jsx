@@ -63,7 +63,7 @@ const App = () => {
           <Route path="checkin" element={<Checkin />} />
           <Route path="mood" element={<MoodTracker />} />
           <Route path="analytics" element={<Analytics />} />
-          <Route path="settings" element={<Settings />} />
+          <Route path="/dashboard/settings" element={<Settings />} />
           <Route path="/dashboard/profile/profile" element={<Profile />} />
           <Route path="/dashboard/profile/account" element={<Account />} />
           <Route path="/dashboard/profile/notifications" element={<Notifications />} />
