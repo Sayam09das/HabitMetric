@@ -59,6 +59,8 @@ export default function Overview({
     weeklyProgress = [],
     userProfile = {},
 }) {
+
+
     const [timeOfDay, setTimeOfDay] = useState("");
     const [selectedPeriod, setSelectedPeriod] = useState("week");
     const [selectedMetric, setSelectedMetric] = useState("all");
@@ -72,6 +74,21 @@ export default function Overview({
         else if (hour < 18) setTimeOfDay("afternoon");
         else setTimeOfDay("evening");
     }, []);
+
+
+    const handleRefresh = () => {
+        if (isRefreshing) return;
+        setIsRefreshing(true);
+        setTimeout(() => {
+            window.location.reload();
+        }, 150);
+    };
+
+
+
+
+
+
 
     // Advanced Calculations with Memoization
     const metrics = useMemo(() => {
@@ -186,11 +203,6 @@ export default function Overview({
         { name: "Perfect Month", achieved: false, date: "TBD" },
     ];
 
-    // Handle refresh
-    const handleRefresh = useCallback(() => {
-        setIsRefreshing(true);
-        setTimeout(() => setIsRefreshing(false), 1000);
-    }, []);
 
     // Animation Variants
     const containerVariants = {
@@ -302,10 +314,16 @@ export default function Overview({
                                 onClick={handleRefresh}
                                 className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
                             >
-                                <RefreshCw
-                                    className={`w-5 h-5 text-gray-600 ${isRefreshing ? "animate-spin" : ""
-                                        }`}
-                                />
+                                <button
+                                    onClick={handleRefresh}
+                                    className="flex items-center justify-center"
+                                >
+                                    <RefreshCw
+                                        className={`w-5 h-5 inline-block text-gray-600 hover:animate-none ${isRefreshing ? "animate-spin" : ""
+                                            }`}
+                                    />
+                                </button>
+
                             </motion.button>
                         </div>
                         <p className="text-sm sm:text-base lg:text-lg text-gray-600">
@@ -313,7 +331,7 @@ export default function Overview({
                             <span className="font-semibold text-indigo-600">
                                 {userProfile.name || "User"}
                             </span>
-                            ! Here's your comprehensive progress analysis 📊
+                            ! Here's your comprehensive progress analysis
                         </p>
                     </div>
 
@@ -512,8 +530,8 @@ export default function Overview({
                                         key={period}
                                         onClick={() => setSelectedPeriod(period)}
                                         className={`px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg font-medium transition-all ${selectedPeriod === period
-                                                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30"
-                                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                            ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30"
+                                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                                             }`}
                                     >
                                         {period.charAt(0).toUpperCase() + period.slice(1)}
@@ -757,8 +775,8 @@ export default function Overview({
                                 >
                                     <div
                                         className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center ${milestone.achieved
-                                                ? "bg-gradient-to-br from-green-400 to-green-600"
-                                                : "bg-gray-300"
+                                            ? "bg-gradient-to-br from-green-400 to-green-600"
+                                            : "bg-gray-300"
                                             }`}
                                     >
                                         {milestone.achieved ? (
