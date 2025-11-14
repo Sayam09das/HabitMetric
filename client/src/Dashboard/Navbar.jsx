@@ -25,24 +25,23 @@ export default function Navbar({ sidebarOpen, setSidebarOpen, user }) {
                 `${API_ORIGIN}/auth/logout`,
                 {},
                 {
-                    withCredentials: true, // send cookies if used
+                    withCredentials: true,
                     timeout: 15000,
                 }
             );
 
-            // Clear local tokens if any (JWT)
             localStorage.removeItem("token");
             localStorage.removeItem("refreshToken");
 
-            // Redirect to login
             window.location.href = "/login";
         } catch (err) {
             console.error("Logout failed:", err);
-            // Even if backend fails, still force logout
             localStorage.removeItem("token");
             window.location.href = "/login";
         }
     };
+
+
 
 
     const getGreeting = () => {
@@ -182,18 +181,23 @@ export default function Navbar({ sidebarOpen, setSidebarOpen, user }) {
                             <div className="absolute right-0 mt-2 w-52 sm:w-56 rounded-xl sm:rounded-2xl shadow-lg border border-gray-200 bg-white animate-fadeIn">
                                 <div className="px-3 sm:px-4 py-2.5 sm:py-3 border-b border-gray-100">
                                     <p className="font-semibold text-sm sm:text-base text-gray-800 truncate">
-                                        {user.name}
+                                        {user?.name || "Unnamed"}
                                     </p>
                                     <p className="text-xs sm:text-sm text-gray-500 truncate">
-                                        {user.email}
+                                        {user?.email || "no-email@example.com"}
                                     </p>
                                 </div>
+
+                                {/* View Profile */}
                                 <Link
                                     to="/dashboard/profile"
-                                    className="block w-full px-3 sm:px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-xs sm:text-sm text-gray-700"
+                                    className="block w-full px-3 sm:px-4 py-2 text-left flex items-center gap-2 hover:bg-gray-50 text-xs sm:text-sm text-gray-700"
+                                    onClick={() => setShowProfileMenu(false)}
                                 >
-                                    <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> My Profile
+                                    <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                    View Profile
                                 </Link>
+                                <div className="border-t border-gray-100" />
                                 <Link
                                     to="/dashboard/settings"
                                     className="block w-full px-3 sm:px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-2 text-xs sm:text-sm text-gray-700"
