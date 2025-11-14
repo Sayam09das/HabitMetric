@@ -15,9 +15,11 @@ import axios from "axios";
 
 const API_ORIGIN = import.meta.env.VITE_PRIVATE_API_URL || "http://localhost:3000";
 
-export default function Navbar({ sidebarOpen, setSidebarOpen, user }) {
+export default function Navbar({ sidebarOpen, setSidebarOpen, user={} }) {
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const [showNotification, setShowNotification] = useState(false);
+    const userName = user?.name || "User";
+  const userEmail = user?.email || "no-email@example.com";
 
     const logout = async () => {
         try {
