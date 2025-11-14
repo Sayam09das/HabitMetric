@@ -14,6 +14,7 @@ import Footer from "./Pages/Footer/Footer.jsx";
 // Auth Pages
 import Login from "./Auth/Login/Login.jsx";
 import Register from "./Auth/Register/Register.jsx";
+import Email from "./Auth/email.jsx"
 
 // Dashboard & Inner Pages
 import DashboardLayout from "./Dashboard/Dashboard.jsx";
@@ -33,7 +34,7 @@ const App = () => {
   const location = useLocation();
 
   // Hide navbar & footer on these routes
-  const hideLayoutRoutes = ["/login", "/register", "/dashboard"];
+  const hideLayoutRoutes = ["/login", "/register", "/dashboard", "/verify-email"];
   const hideLayout =
     hideLayoutRoutes.includes(location.pathname) ||
     location.pathname.startsWith("/dashboard/");
@@ -53,6 +54,7 @@ const App = () => {
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/verify-email" element={<Email />} />
 
         {/* Dashboard Routes with nested pages */}
         <Route path="/dashboard" element={<DashboardLayout />}>

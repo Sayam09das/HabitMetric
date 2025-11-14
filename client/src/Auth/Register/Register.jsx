@@ -13,8 +13,11 @@ import {
     AlertCircle,
     Sparkles,
 } from "lucide-react";
+import axios from "axios";
 
-const API_ORIGIN = import.meta.env.VITE_PRIVATE_API_URL;
+const API_ORIGIN =
+    import.meta.env.VITE_PRIVATE_API_URL ||
+    "http://localhost:3000";
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -144,43 +147,40 @@ export default function Register() {
                 password: formData.password,
             };
 
-            const res = await fetch(`${API_ORIGIN}/auth/register`, {
-                method: "POST",
+            const res = await axios.post(`${API_ORIGIN}/auth/register`, payload, {
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
             });
 
-            const data = await res.json().catch(() => ({ message: "No JSON response" }));
+            const data = res.data;
 
-            if (!res.ok) {
-                const message =
-                    data?.message || data?.error || `Request failed with status ${res.status}`;
-                setServerError(message);
-                showToast(message, "error");
-            } else {
-                setSuccessMessage("Registration successful!");
-                setSuccessEmail(formData.email);
-                showToast("Registration successful — check your email!", "success");
+            setSuccessMessage("Registration successful!");
+            setSuccessEmail(formData.email);
+            showToast("Registration successful — check your email!", "success");
 
-                // Reset form after a short delay
-                setTimeout(() => {
-                    setFormData({ fullName: "", email: "", password: "", confirmPassword: "" });
-                    setTouched({
-                        fullName: false,
-                        email: false,
-                        password: false,
-                        confirmPassword: false,
-                        terms: false,
-                    });
-                    setTermsAccepted(false);
-                }, 500);
-            }
+            // Reset form after short delay
+            setTimeout(() => {
+                setFormData({ fullName: "", email: "", password: "", confirmPassword: "" });
+                setTouched({
+                    fullName: false,
+                    email: false,
+                    password: false,
+                    confirmPassword: false,
+                    terms: false,
+                });
+                setTermsAccepted(false);
+            }, 500);
+
         } catch (err) {
-            setServerError("Network error — please try again.");
-            showToast("Network error — please try again.", "error");
-        } finally {
-            setLoading(false);
+            const message =
+                err?.response?.data?.message ||
+                err?.response?.data?.error ||
+                err?.message ||
+                "Network error";
+
+            setServerError(message);
+            showToast(message, "error");
         }
+
     };
 
     return (
