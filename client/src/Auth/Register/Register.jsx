@@ -13,16 +13,8 @@ import {
     AlertCircle,
     Sparkles,
 } from "lucide-react";
-import { gsap } from "gsap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
-// safe API origin (compatible with CRA/Vite/etc.)
-const API_ORIGIN =
-    (typeof process !== "undefined" &&
-        process.env &&
-        (process.env.REACT_APP_API_URL || process.env.REACT_APP_PRIVATE_API_URL)) ||
-    "http://localhost:3000";
+const API_ORIGIN = import.meta.env.VITE_PRIVATE_API_URL;
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -56,51 +48,17 @@ export default function Register() {
     const [loading, setLoading] = useState(false);
     const [serverError, setServerError] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
+    const [successEmail, setSuccessEmail] = useState("");
+    const [toast, setToast] = useState({ show: false, message: "", type: "" });
 
     const containerRef = useRef(null);
     const cardRef = useRef(null);
-    const titleRef = useRef(null);
-    const sparklesRef = useRef([]);
 
-    useEffect(() => {
-        const ctx = gsap.context(() => {
-            if (cardRef.current) {
-                gsap.from(cardRef.current, {
-                    scale: 0.8,
-                    opacity: 0,
-                    duration: 0.8,
-                    ease: "back.out(1.7)",
-                });
-            }
-
-            if (titleRef.current) {
-                gsap.from(titleRef.current, {
-                    y: -30,
-                    opacity: 0,
-                    duration: 0.6,
-                    delay: 0.3,
-                    ease: "power3.out",
-                });
-            }
-
-            sparklesRef.current.forEach((sparkle, i) => {
-                if (sparkle) {
-                    gsap.to(sparkle, {
-                        y: "+=15",
-                        x: "+=10",
-                        rotation: 360,
-                        duration: 3 + i * 0.4,
-                        repeat: -1,
-                        yoyo: true,
-                        ease: "sine.inOut",
-                        delay: i * 0.3,
-                    });
-                }
-            });
-        }, containerRef);
-
-        return () => ctx.revert();
-    }, []);
+    // Toast notification function
+    const showToast = (message, type = "info") => {
+        setToast({ show: true, message, type });
+        setTimeout(() => setToast({ show: false, message: "", type: "" }), 3000);
+    };
 
     useEffect(() => {
         setNameValid(formData.fullName.trim().length >= 3);
@@ -146,10 +104,6 @@ export default function Register() {
         </div>
     );
 
-    const notifyValidationError = (message) => {
-        toast.error(message || "Please fix the highlighted fields.");
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setTouched({
@@ -161,12 +115,7 @@ export default function Register() {
         });
         setServerError("");
         setSuccessMessage("");
-
-        // debug logs
-        // eslint-disable-next-line no-console
-        console.log("API_ORIGIN:", API_ORIGIN);
-        // eslint-disable-next-line no-console
-        console.log("formData:", formData, "termsAccepted:", termsAccepted);
+        setSuccessEmail("");
 
         const isValid =
             nameValid &&
@@ -176,24 +125,17 @@ export default function Register() {
             termsAccepted;
 
         if (!isValid) {
-            if (cardRef.current) {
-                gsap.to(cardRef.current, {
-                    x: [0, -10, 10, -10, 10, 0],
-                    duration: 0.5,
-                    ease: "power2.out",
-                });
-            }
             if (!termsAccepted) {
                 setServerError("You must accept the Terms of Service and Privacy Policy.");
-                toast.error("You must accept the Terms of Service and Privacy Policy.");
+                showToast("You must accept the Terms of Service and Privacy Policy.", "error");
             } else {
-                notifyValidationError();
+                showToast("Please fix the highlighted fields.", "error");
             }
             return;
         }
 
         setLoading(true);
-        toast.info("Creating account...", { autoClose: 1500 });
+        showToast("Creating account...", "info");
 
         try {
             const payload = {
@@ -202,19 +144,11 @@ export default function Register() {
                 password: formData.password,
             };
 
-            // debug
-            // eslint-disable-next-line no-console
-            console.log("payload:", payload);
-
             const res = await fetch(`${API_ORIGIN}/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
             });
-
-            // debug
-            // eslint-disable-next-line no-console
-            console.log("response status:", res.status);
 
             const data = await res.json().catch(() => ({ message: "No JSON response" }));
 
@@ -222,51 +156,32 @@ export default function Register() {
                 const message =
                     data?.message || data?.error || `Request failed with status ${res.status}`;
                 setServerError(message);
-                toast.error(message);
-                if (cardRef.current)
-                    gsap.fromTo(
-                        cardRef.current,
-                        { x: -6 },
-                        { x: 0, duration: 0.35, ease: "elastic.out(1, 0.6)" }
-                    );
+                showToast(message, "error");
             } else {
-                setSuccessMessage(
-                    "Registration successful — check your email to verify your account."
-                );
-                toast.success("Registration successful — check your email to verify your account.");
-                if (cardRef.current) {
-                    gsap.to(cardRef.current, {
-                        scale: 1.05,
-                        duration: 0.18,
-                        yoyo: true,
-                        repeat: 1,
+                setSuccessMessage("Registration successful!");
+                setSuccessEmail(formData.email);
+                showToast("Registration successful — check your email!", "success");
+
+                // Reset form after a short delay
+                setTimeout(() => {
+                    setFormData({ fullName: "", email: "", password: "", confirmPassword: "" });
+                    setTouched({
+                        fullName: false,
+                        email: false,
+                        password: false,
+                        confirmPassword: false,
+                        terms: false,
                     });
-                }
-                setFormData({ fullName: "", email: "", password: "", confirmPassword: "" });
-                setTouched({
-                    fullName: false,
-                    email: false,
-                    password: false,
-                    confirmPassword: false,
-                    terms: false,
-                });
-                setTermsAccepted(false);
+                    setTermsAccepted(false);
+                }, 500);
             }
         } catch (err) {
-            // eslint-disable-next-line no-console
-            console.error("fetch error:", err);
             setServerError("Network error — please try again.");
-            toast.error("Network error — please try again.");
+            showToast("Network error — please try again.", "error");
         } finally {
             setLoading(false);
         }
     };
-
-    const handleSocialLogin = (provider) => {
-        toast.info(`${provider} login not implemented in this demo.`);
-    };
-
-
 
     return (
         <div
@@ -274,21 +189,38 @@ export default function Register() {
             className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
             style={{ background: 'linear-gradient(135deg, #EEF2FF 0%, #F9FAFB 50%, #ECFDF5 100%)' }}
         >
+            {/* Toast Notification */}
+            {toast.show && (
+                <div
+                    className="fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg flex items-center gap-2 animate-slide-in"
+                    style={{
+                        backgroundColor: toast.type === "error" ? "#FEE2E2" : toast.type === "success" ? "#D1FAE5" : "#DBEAFE",
+                        color: toast.type === "error" ? "#991B1B" : toast.type === "success" ? "#065F46" : "#1E40AF",
+                        maxWidth: "400px"
+                    }}
+                >
+                    {toast.type === "error" && <XCircle size={20} />}
+                    {toast.type === "success" && <CheckCircle2 size={20} />}
+                    {toast.type === "info" && <AlertCircle size={20} />}
+                    <span className="text-sm font-medium">{toast.message}</span>
+                </div>
+            )}
+
             {/* Animated background elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div ref={el => sparklesRef.current[0] = el} className="absolute top-20 left-20">
+                <div className="absolute top-20 left-20">
                     <Sparkles size={28} style={{ color: '#4F46E5', opacity: 0.4 }} />
                 </div>
-                <div ref={el => sparklesRef.current[1] = el} className="absolute top-32 right-24">
+                <div className="absolute top-32 right-24">
                     <Sparkles size={36} style={{ color: '#10B981', opacity: 0.3 }} />
                 </div>
-                <div ref={el => sparklesRef.current[2] = el} className="absolute bottom-40 left-32">
+                <div className="absolute bottom-40 left-32">
                     <Sparkles size={32} style={{ color: '#6366F1', opacity: 0.35 }} />
                 </div>
-                <div ref={el => sparklesRef.current[3] = el} className="absolute bottom-24 right-28">
+                <div className="absolute bottom-24 right-28">
                     <Sparkles size={24} style={{ color: '#F59E0B', opacity: 0.4 }} />
                 </div>
-                <div ref={el => sparklesRef.current[4] = el} className="absolute top-1/2 left-16">
+                <div className="absolute top-1/2 left-16">
                     <Sparkles size={20} style={{ color: '#EF4444', opacity: 0.25 }} />
                 </div>
             </div>
@@ -302,16 +234,8 @@ export default function Register() {
                     border: "1px solid #E2E8F0",
                 }}
             >
-                {/* Toast container */}
-                <ToastContainer position="top-right" autoClose={3000} pauseOnHover />
-
-                <form
-                    onSubmit={handleSubmit}
-                    ref={containerRef}
-                    className="max-w-md mx-auto"
-                    aria-live="polite"
-                >
-                    <div ref={titleRef} className="text-center mb-6">
+                <div className="max-w-md mx-auto" aria-live="polite">
+                    <div className="text-center mb-6">
                         <div
                             className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4"
                             style={{
@@ -326,15 +250,30 @@ export default function Register() {
                         <p style={{ color: "#475569" }}>Join us and start your journey today</p>
                     </div>
 
-                    {/* server / success messages */}
+                    {/* Error Message */}
                     {serverError && (
-                        <div className="mb-3 text-sm" style={{ color: "#EF4444" }}>
-                            {serverError}
+                        <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: "#FEE2E2", color: "#991B1B" }}>
+                            <div className="flex items-start gap-2">
+                                <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
+                                <span className="text-sm">{serverError}</span>
+                            </div>
                         </div>
                     )}
+
+                    {/* Success Message */}
                     {successMessage && (
-                        <div className="mb-3 text-sm" style={{ color: "#10B981" }}>
-                            {successMessage}
+                        <div className="mb-4 p-4 rounded-lg" style={{ backgroundColor: "#D1FAE5", color: "#065F46" }}>
+                            <div className="flex items-start gap-2 mb-2">
+                                <CheckCircle2 size={18} className="flex-shrink-0 mt-0.5" />
+                                <span className="text-sm font-medium">{successMessage}</span>
+                            </div>
+                            {successEmail && (
+                                <p className="text-xs mt-2 ml-6" style={{ color: "#047857" }}>
+                                    We've sent a verification email to <strong>{successEmail}</strong>.
+                                    <br />
+                                    Please check your inbox and spam folder.
+                                </p>
+                            )}
                         </div>
                     )}
 
@@ -516,7 +455,8 @@ export default function Register() {
 
                         {/* Submit */}
                         <button
-                            type="submit"
+                            type="button"
+                            onClick={handleSubmit}
                             className="w-full py-3 rounded-lg font-semibold transition-all duration-300 hover:shadow-lg cursor-pointer"
                             style={{
                                 background: "linear-gradient(135deg, #4F46E5 0%, #6366F1 100%)",
@@ -527,18 +467,16 @@ export default function Register() {
                         >
                             {loading ? "Creating account..." : "Create Account"}
                         </button>
-
-                        {/* Social etc... omitted for brevity */}
                     </div>
-                </form>
+                </div>
 
                 <div className="mt-6 text-center">
                     <p className="text-sm" style={{ color: "#475569" }}>
                         Already have an account?{" "}
-                        <a href="/login" className="font-medium hover:underline " style={{ color: "#4F46E5" }}>Sign in</a>
+                        <a href="/login" className="font-medium hover:underline" style={{ color: "#4F46E5" }}>Sign in</a>
                     </p>
                 </div>
             </div>
         </div>
     );
-};
+}
