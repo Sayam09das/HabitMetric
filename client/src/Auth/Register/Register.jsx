@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect, useRef } from "react";
 import {
     User,
@@ -15,9 +13,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 
-const API_ORIGIN =
-    import.meta.env.VITE_PRIVATE_API_URL ||
-    "http://localhost:3000";
+const API_ORIGIN = import.meta.env.VITE_PRIVATE_API_URL || "http://localhost:3000";
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -57,6 +53,13 @@ export default function Register() {
     const containerRef = useRef(null);
     const cardRef = useRef(null);
 
+    // axios instance
+    const api = axios.create({
+        baseURL: API_ORIGIN,
+        headers: { "Content-Type": "application/json" },
+        timeout: 15000,
+    });
+
     // Toast notification function
     const showToast = (message, type = "info") => {
         setToast({ show: true, message, type });
@@ -84,17 +87,20 @@ export default function Register() {
 
     useEffect(() => {
         setPasswordsMatch(
-            formData.password === formData.confirmPassword &&
-            formData.confirmPassword.length > 0
+            formData.password === formData.confirmPassword && formData.confirmPassword.length > 0
         );
     }, [formData.password, formData.confirmPassword]);
+
+    useEffect(() => {
+        // debug: show where API origin is coming from (useful for env issues)
+        console.log("Register component mounted. API_ORIGIN:", API_ORIGIN);
+    }, []);
 
     const handleInputChange = (field, value) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
     };
 
-    const markTouched = (field) =>
-        setTouched((prev) => ({ ...prev, [field]: true }));
+    const markTouched = (field) => setTouched((prev) => ({ ...prev, [field]: true }));
 
     const ValidationItem = ({ isValid, text }) => (
         <div className="flex items-center gap-2 text-sm">
@@ -108,7 +114,8 @@ export default function Register() {
     );
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (e && typeof e.preventDefault === "function") e.preventDefault();
+
         setTouched({
             fullName: true,
             email: true,
@@ -129,8 +136,9 @@ export default function Register() {
 
         if (!isValid) {
             if (!termsAccepted) {
-                setServerError("You must accept the Terms of Service and Privacy Policy.");
-                showToast("You must accept the Terms of Service and Privacy Policy.", "error");
+                const msg = "You must accept the Terms of Service and Privacy Policy.";
+                setServerError(msg);
+                showToast(msg, "error");
             } else {
                 showToast("Please fix the highlighted fields.", "error");
             }
@@ -147,17 +155,16 @@ export default function Register() {
                 password: formData.password,
             };
 
-            const res = await axios.post(`${API_ORIGIN}/auth/register`, payload, {
-                headers: { "Content-Type": "application/json" },
-            });
+            console.log("Register: API_ORIGIN =", API_ORIGIN);
+            console.log("Register: payload =", payload);
 
-            const data = res.data;
+            const res = await api.post("/auth/register", payload);
+            console.log("Register success response:", res);
 
             setSuccessMessage("Registration successful!");
             setSuccessEmail(formData.email);
             showToast("Registration successful — check your email!", "success");
 
-            // Reset form after short delay
             setTimeout(() => {
                 setFormData({ fullName: "", email: "", password: "", confirmPassword: "" });
                 setTouched({
@@ -169,18 +176,27 @@ export default function Register() {
                 });
                 setTermsAccepted(false);
             }, 500);
-
         } catch (err) {
+            console.error("Register error:", err);
+
             const message =
                 err?.response?.data?.message ||
                 err?.response?.data?.error ||
                 err?.message ||
-                "Network error";
+                "Network error — please try again.";
+
+            if (err?.response) {
+                console.warn("Server status:", err.response.status);
+                console.warn("Server data:", err.response.data);
+            } else if (err?.request) {
+                console.warn("No response — possible network/CORS issue (check Network tab).");
+            }
 
             setServerError(message);
             showToast(message, "error");
+        } finally {
+            setLoading(false);
         }
-
     };
 
     return (
@@ -277,7 +293,8 @@ export default function Register() {
                         </div>
                     )}
 
-                    <div className="space-y-5">
+                    {/* FORM START */}
+                    <form onSubmit={handleSubmit} className="space-y-5">
                         {/* Full Name */}
                         <div>
                             <label className="block text-sm font-medium mb-2" style={{ color: "#1E293B" }}>
@@ -455,8 +472,7 @@ export default function Register() {
 
                         {/* Submit */}
                         <button
-                            type="button"
-                            onClick={handleSubmit}
+                            type="submit"
                             className="w-full py-3 rounded-lg font-semibold transition-all duration-300 hover:shadow-lg cursor-pointer"
                             style={{
                                 background: "linear-gradient(135deg, #4F46E5 0%, #6366F1 100%)",
@@ -467,7 +483,8 @@ export default function Register() {
                         >
                             {loading ? "Creating account..." : "Create Account"}
                         </button>
-                    </div>
+                    </form>
+                    {/* FORM END */}
                 </div>
 
                 <div className="mt-6 text-center">
