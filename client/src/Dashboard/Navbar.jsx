@@ -40,12 +40,35 @@ export default function Navbar({ sidebarOpen, setSidebarOpen, user: propUser = n
         }
     };
 
-    const getGreeting = () => {
+    const getGreeting = (name) => {
         const hour = new Date().getHours();
-        if (hour < 12) return "Good Morning";
-        if (hour < 18) return "Good Afternoon";
-        return "Good Evening";
+
+        const timeGreeting =
+            hour < 12
+                ? "Good morning"
+                : hour < 18
+                    ? "Good afternoon"
+                    : "Good evening";
+
+        const boosters = [
+            "Stay consistent.",
+            "Keep going.",
+            "Stay focused.",
+            "Small steps.",
+            "You got this.",
+            "Keep moving.",
+            "Daily progress.",
+            "One step.",
+            "Stay sharp.",
+            "Be steady.",
+        ];
+
+        const booster = boosters[Math.floor(Math.random() * boosters.length)];
+
+        return `${timeGreeting}, ${name ?? "User"} — ${booster}`;
     };
+
+
 
     useEffect(() => {
         const style = document.createElement("style");
@@ -182,8 +205,12 @@ export default function Navbar({ sidebarOpen, setSidebarOpen, user: propUser = n
                 {/* Right */}
                 <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-4">
                     <p className="hidden xl:block text-sm text-gray-600 font-medium whitespace-nowrap">
-                        {getGreeting()}, <span className="text-indigo-600 font-semibold">{displayName}</span> 👋
+                        {getGreeting()},
+                        <span className="text-indigo-600 font-semibold"> {displayName} </span>
+                        👋
                     </p>
+
+
 
                     {/* Notifications */}
                     <div className="relative">
