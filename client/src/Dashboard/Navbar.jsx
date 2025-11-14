@@ -15,11 +15,10 @@ import axios from "axios";
 
 const API_ORIGIN = import.meta.env.VITE_PRIVATE_API_URL || "http://localhost:3000";
 
-export default function Navbar({ sidebarOpen, setSidebarOpen, user={} }) {
+export default function Navbar({ sidebarOpen, setSidebarOpen, user: propUser = null, }) {
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const [showNotification, setShowNotification] = useState(false);
-    const userName = user?.name || "User";
-  const userEmail = user?.email || "no-email@example.com";
+    const [user, setUser] = useState(propUser);
 
     const logout = async () => {
         try {
@@ -75,6 +74,44 @@ export default function Navbar({ sidebarOpen, setSidebarOpen, user={} }) {
         if (words.length === 1) return words[0][0].toUpperCase();
         return (words[0][0] + words[1][0]).toUpperCase();
     };
+
+    useEffect(() => {
+        if (propUser) return; // do nothing if parent provided user
+
+        let cancelled = false;
+        const fetchProfile = async () => {
+            try {
+                const token = localStorage.getItem("token"); // optional: if API expects Bearer
+                const resp = await axios.get(`${API_ORIGIN}/protected/profile`, {
+                    withCredentials: true, // if using cookies
+                    timeout: 15000,
+                    headers: token
+                        ? { Authorization: `Bearer ${token}` }
+                        : undefined,
+                });
+
+                if (!cancelled) {
+                    // adjust according to your API shape: resp.data.user or resp.data
+                    setUser(resp.data?.user ?? resp.data ?? null);
+                }
+            } catch (err) {
+                console.error("Failed to fetch profile:", err);
+                if (!cancelled) {
+                    // fallback user (non-breaking)
+                    setUser({ name: "User", email: "no-email@example.com" });
+                }
+            }
+        };
+
+        fetchProfile();
+        return () => {
+            cancelled = true;
+        };
+    }, [propUser]);
+
+    // local small helpers
+    const displayName = user?.name ?? "User";
+    const displayEmail = user?.email ?? "no-email@example.com";
 
     return (
         <header className="sticky top-0 z-50 w-full shadow-sm backdrop-blur-md border-b border-gray-200 bg-white transition-all duration-300">
@@ -183,10 +220,10 @@ export default function Navbar({ sidebarOpen, setSidebarOpen, user={} }) {
                             <div className="absolute right-0 mt-2 w-52 sm:w-56 rounded-xl sm:rounded-2xl shadow-lg border border-gray-200 bg-white animate-fadeIn">
                                 <div className="px-3 sm:px-4 py-2.5 sm:py-3 border-b border-gray-100">
                                     <p className="font-semibold text-sm sm:text-base text-gray-800 truncate">
-                                        {user?.name || "Unnamed"}
+                                        {displayName || "Unnamed"}
                                     </p>
                                     <p className="text-xs sm:text-sm text-gray-500 truncate">
-                                        {user?.email || "no-email@example.com"}
+                                        {displayEmail}
                                     </p>
                                 </div>
 
