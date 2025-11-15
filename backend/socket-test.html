@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Socket Test (strip Bearer)</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+
+<body>
+    <h3>Socket Test</h3>
+    <pre id="out"></pre>
+    <script>
+        const outEl = document.getElementById('out');
+        const out = (t) => { outEl.textContent += t + '\n'; console.log(t); };
+
+        // Change to your server origin
+        const API_URL = 'http://localhost:3000';
+
+        // Ask for token — user may paste "Bearer <token>" sometimes
+        let tokenInput = prompt('Paste JWT token (you may include "Bearer "):') || '';
+        // Strip "Bearer" prefix if present
+        const token = tokenInput.trim().replace(/^Bearer\s+/i, '');
+
+        out('using token: ' + (token ? token.slice(0, 8) + '...' : '(none)'));
+
+        // Force websocket transport to avoid polling errors during debug
+        const socket = io(API_URL, {
+            auth: { token },
+            transports: ['websocket']
+        });
+
+        socket.on('connect', () => {
+            out('connected: ' + socket.id);
+        });
+
+        socket.on('streakUpdated', (payload) => {
+            out('streakUpdated -> ' + JSON.stringify(payload));
+        });
+
+        socket.on('connect_error', (err) => {
+            out('connect_error: ' + err.message);
+            out('full error object: ' + JSON.stringify(err));
+        });
+    </script>
+</body>
+
+</html>

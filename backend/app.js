@@ -15,6 +15,7 @@ const authRoutes = require('./routes/authRoutes');
 const protectedRoutes = require('./routes/protectedRoutes');
 const habitRoutes = require('./routes/habit');
 const moodRoutes = require('./routes/mood');
+const streakRoutes = require('./routes/StreakRoutes')
 
 
 // ✅ CORS Configuration
@@ -41,6 +42,7 @@ app.use('/auth', authRoutes);
 app.use('/protected', protectedRoutes);
 app.use('/habit', habitRoutes);
 app.use('/mood', moodRoutes);
+app.use('/streak', streakRoutes);
 
 
 app.use((req, res, next) => {

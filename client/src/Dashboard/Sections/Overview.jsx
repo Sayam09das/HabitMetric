@@ -1,9 +1,18 @@
 "use client";
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, {
+    useState,
+    useEffect,
+    useMemo,
+    useCallback,
+    useRef
+} from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import StatCard from "../Components/StatCard";
-import COLORS from "../data/colors";
+import { io } from "socket.io-client";
 import axios from "axios";
+import StatCard from "../Components/StatCard";
+import TrendIndicator from "./TrendIndicator";
+import COLORS from "../data/colors";
+
 import {
     Flame,
     Target,
@@ -57,8 +66,8 @@ import {
 const API_ORIGIN = import.meta.env.VITE_PRIVATE_API_URL || "http://localhost:3000";
 
 export default function Overview({
-    habits = [],
-    todayCheckins = [],
+    habits: initialHabits = [],
+    todayCheckins: initialTodayCheckins = [],
     currentMood = "Neutral",
     weeklyProgress = [],
 }) {
@@ -72,6 +81,12 @@ export default function Overview({
     const [activeTab, setActiveTab] = useState("overview");
 
     const [user, setUser] = useState(null);
+    const [habits, setHabits] = useState(initialHabits);      // make sure habits state exists
+    const [todayCheckins, setTodayCheckins] = useState(initialTodayCheckins);
+
+    const socketRef = useRef(null);
+    const mountedRef = useRef(false);
+
 
 
     useEffect(() => {
@@ -168,38 +183,104 @@ export default function Overview({
 
 
 
-    // Advanced Calculations with Memoization
-    const metrics = useMemo(() => {
-        const streak = Math.max(...habits.map((h) => h.streak || 0), 0);
-        const completionRate = habits.length > 0
-            ? Math.round((todayCheckins.length / habits.length) * 100)
-            : 0;
-        const totalCheckIns = habits.reduce((sum, h) => sum + (h.totalCheckIns || 0), 0);
-        const activeHabits = habits.filter((h) => h.streak > 0).length;
-        const avgStreak = habits.length > 0
-            ? Math.round(habits.reduce((sum, h) => sum + (h.streak || 0), 0) / habits.length)
-            : 0;
-        const perfectDays = habits.filter(h => h.perfectDays || 0).reduce((sum, h) => sum + h.perfectDays, 0);
+    useEffect(() => {
+        console.debug("DEBUG initialHabits prop:", initialHabits);
+        console.debug("DEBUG initialTodayCheckins prop:", initialTodayCheckins);
+        const rawToken = localStorage.getItem("token") || "";
+        console.debug("DEBUG localStorage token present:", !!rawToken);
+        if (rawToken) console.debug("DEBUG token (first8):", rawToken.slice(0, 8) + "...");
+    }, [initialHabits, initialTodayCheckins]);
 
-        // Calculate trends (mock data - in production, compare with previous period)
+    // ensure internal state follows prop changes
+    useEffect(() => { setHabits(initialHabits); }, [initialHabits]);
+    useEffect(() => { setTodayCheckins(initialTodayCheckins); }, [initialTodayCheckins]);
+
+    // Derived metrics
+    const metrics = useMemo(() => {
+        const streak = habits.length ? Math.max(...habits.map(h => h.streak || 0)) : 0;
+        const completionRate = habits.length > 0 ? Math.round((todayCheckins.length / habits.length) * 100) : 0;
+        const totalCheckIns = habits.reduce((sum, h) => sum + (h.totalCheckIns || 0), 0);
+        const activeHabits = habits.filter(h => (h.enabled ?? true)).length;
+        const avgStreak = habits.length > 0 ? Math.round(habits.reduce((sum, h) => sum + (h.streak || 0), 0) / habits.length) : 0;
+        const perfectDays = habits.reduce((sum, h) => sum + (h.perfectDays || 0), 0);
+
         const streakTrend = 15;
         const completionTrend = completionRate > 80 ? 8 : completionRate > 50 ? 0 : -5;
         const habitsTrend = 12;
         const checkInsTrend = 20;
 
-        return {
-            streak,
-            completionRate,
-            totalCheckIns,
-            activeHabits,
-            avgStreak,
-            perfectDays,
-            streakTrend,
-            completionTrend,
-            habitsTrend,
-            checkInsTrend,
-        };
+        return { streak, completionRate, totalCheckIns, activeHabits, avgStreak, perfectDays, streakTrend, completionTrend, habitsTrend, checkInsTrend };
     }, [habits, todayCheckins]);
+
+    // Socket.IO connection: reads token from localStorage (no manual prompt)
+    useEffect(() => {
+        mountedRef.current = true;
+        const rawToken = localStorage.getItem("token") || "";
+        const token = rawToken.replace(/^Bearer\s+/i, "");
+
+        if (!token) {
+            console.warn("No token found in localStorage — socket will not connect.");
+            return;
+        }
+
+        const socket = io(API_ORIGIN, {
+            auth: { token },
+            transports: ['websocket', 'polling'],
+            path: "/socket.io",
+            withCredentials: true,
+        });
+
+        socketRef.current = socket;
+
+        socket.on("connect", () => {
+            console.debug("socket connected", socket.id, "user token present");
+        });
+
+        socket.on("streakUpdated", (payload) => {
+            console.debug("socket -> streakUpdated", payload);
+            if (!mountedRef.current) return;
+            const { habitId, streak, totalCheckIns, lastCheckin } = payload;
+
+            // Update only if we know the habit locally (avoids adding unknown habits)
+            setHabits(prev => {
+                if (!prev.some(h => String(h._id) === String(habitId))) return prev;
+                return prev.map(h => {
+                    if (String(h._id) === String(habitId)) {
+                        return {
+                            ...h,
+                            streak: typeof streak === "number" ? streak : (h.streak || 0),
+                            lastCheckin: lastCheckin ? new Date(lastCheckin) : h.lastCheckin,
+                            totalCheckIns: typeof totalCheckIns === "number" ? totalCheckIns : (h.totalCheckIns || 0)
+                        };
+                    }
+                    return h;
+                });
+            });
+
+            // mark checked today if not already
+            setTodayCheckins(prev => {
+                if (prev.some(id => String(id) === String(habitId))) return prev;
+                return [...prev, habitId];
+            });
+        });
+
+        socket.on("connect_error", (err) => {
+            console.error("socket connect_error:", err?.message || err);
+        });
+
+        socket.on("disconnect", (reason) => {
+            console.debug("socket disconnected:", reason);
+        });
+
+        return () => {
+            mountedRef.current = false;
+            if (socketRef.current) {
+                socketRef.current.disconnect();
+                socketRef.current = null;
+            }
+        };
+    }, []);
+
 
     // Mock Enterprise-Level Data
     const monthlyProgress = [
@@ -416,16 +497,48 @@ export default function Overview({
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                        <select
-                            value={selectedMetric}
-                            onChange={(e) => setSelectedMetric(e.target.value)}
-                            className="px-3 sm:px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                        >
-                            <option value="all">All Metrics</option>
-                            <option value="habits">Habits Only</option>
-                            <option value="mood">Mood Only</option>
-                            <option value="performance">Performance</option>
-                        </select>
+                        <div className="relative inline-block w-full sm:w-auto">
+                            <select
+                                value={selectedMetric}
+                                onChange={(e) => setSelectedMetric(e.target.value)}
+                                className="
+      appearance-none w-full sm:w-48
+      bg-white 
+      px-4 py-2.5
+      text-sm font-medium
+      text-gray-700
+      border border-gray-300 
+      rounded-lg
+      shadow-sm
+      transition-all duration-200
+      focus:outline-none 
+      focus:ring-2 focus:ring-indigo-500/50 
+      focus:border-indigo-500
+      hover:border-gray-400
+    "
+                            >
+                                <option value="all">All Metrics</option>
+                                <option value="habits">Habits Only</option>
+                                <option value="mood">Mood Only</option>
+                                <option value="performance">Performance</option>
+                            </select>
+
+                            {/* Custom Arrow */}
+                            <div
+                                className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500"
+                            >
+                                <svg
+                                    className="w-4 h-4 transition-transform group-focus-within:rotate-180"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </div>
+
                         <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
@@ -446,6 +559,7 @@ export default function Overview({
                 </motion.div>
 
                 {/* Key Metrics - Top Row */}
+                {/* Key Metrics - Top Row */}
                 <motion.div
                     variants={itemVariants}
                     className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-2 sm:gap-3 lg:gap-4"
@@ -454,29 +568,23 @@ export default function Overview({
                         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 p-4 sm:p-6 text-white shadow-xl">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
                             <Flame className="w-8 h-8 sm:w-10 sm:h-10 mb-3" />
-                            <p className="text-xs sm:text-sm font-medium opacity-90 mb-1">
-                                Current Streak
-                            </p>
+                            <p className="text-xs sm:text-sm font-medium opacity-90 mb-1">Current Streak</p>
                             <div className="flex items-end justify-between">
                                 <div>
-                                    <p className="text-3xl sm:text-4xl lg:text-5xl font-bold">
-                                        {metrics.streak}
-                                    </p>
+                                    <p className="text-3xl sm:text-4xl lg:text-5xl font-bold">{Number(metrics.streak || 0)}</p>
                                     <p className="text-xs sm:text-sm opacity-80">Days</p>
                                 </div>
-                                <TrendIndicator value={metrics.streakTrend} />
+                                <TrendIndicator value={Number(metrics.streakTrend || 0)} />
                             </div>
                         </div>
                     </motion.div>
 
-                    <motion.div variants={cardVariants} whileHover="hover">
+                    <motion.div variants={cardVariants} whileHover="hover" aria-hidden={false}>
                         <div className="rounded-2xl bg-white border border-gray-200 p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
                             <Target className="w-6 h-6 sm:w-8 sm:h-8 text-indigo-600 mb-3" />
                             <p className="text-xs text-gray-600 mb-1">Total Habits</p>
-                            <p className="text-2xl sm:text-3xl font-bold text-gray-800">
-                                {habits.length}
-                            </p>
-                            <TrendIndicator value={metrics.habitsTrend} />
+                            <p className="text-2xl sm:text-3xl font-bold text-gray-800">{Number(habits.length || 0)}</p>
+                            <TrendIndicator value={Number(metrics.habitsTrend || 0)} />
                         </div>
                     </motion.div>
 
@@ -485,9 +593,9 @@ export default function Overview({
                             <CheckSquare className="w-6 h-6 sm:w-8 sm:h-8 text-green-600 mb-3" />
                             <p className="text-xs text-gray-600 mb-1">Today's Progress</p>
                             <p className="text-2xl sm:text-3xl font-bold text-gray-800">
-                                {todayCheckins.length}/{habits.length}
+                                {Number(todayCheckins.length || 0)}/{Math.max(Number(habits.length || 0), 0)}
                             </p>
-                            <TrendIndicator value={metrics.completionTrend} />
+                            <TrendIndicator value={Number(metrics.completionTrend || 0)} />
                         </div>
                     </motion.div>
 
@@ -495,9 +603,7 @@ export default function Overview({
                         <div className="rounded-2xl bg-white border border-gray-200 p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
                             <Activity className="w-6 h-6 sm:w-8 sm:h-8 text-cyan-600 mb-3" />
                             <p className="text-xs text-gray-600 mb-1">Active Habits</p>
-                            <p className="text-2xl sm:text-3xl font-bold text-gray-800">
-                                {metrics.activeHabits}
-                            </p>
+                            <p className="text-2xl sm:text-3xl font-bold text-gray-800">{Number(metrics.activeHabits || 0)}</p>
                             <TrendIndicator value={8} />
                         </div>
                     </motion.div>
@@ -506,10 +612,8 @@ export default function Overview({
                         <div className="rounded-2xl bg-white border border-gray-200 p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
                             <Award className="w-6 h-6 sm:w-8 sm:h-8 text-purple-600 mb-3" />
                             <p className="text-xs text-gray-600 mb-1">Total Check-ins</p>
-                            <p className="text-2xl sm:text-3xl font-bold text-gray-800">
-                                {metrics.totalCheckIns}
-                            </p>
-                            <TrendIndicator value={metrics.checkInsTrend} />
+                            <p className="text-2xl sm:text-3xl font-bold text-gray-800">{Number(metrics.totalCheckIns || 0)}</p>
+                            <TrendIndicator value={Number(metrics.checkInsTrend || 0)} />
                         </div>
                     </motion.div>
 
@@ -517,9 +621,7 @@ export default function Overview({
                         <div className="rounded-2xl bg-white border border-gray-200 p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
                             <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600 mb-3" />
                             <p className="text-xs text-gray-600 mb-1">Completion Rate</p>
-                            <p className="text-2xl sm:text-3xl font-bold text-gray-800">
-                                {metrics.completionRate}%
-                            </p>
+                            <p className="text-2xl sm:text-3xl font-bold text-gray-800">{Math.round(Number(metrics.completionRate || 0))}%</p>
                             <TrendIndicator value={5} />
                         </div>
                     </motion.div>
@@ -528,13 +630,12 @@ export default function Overview({
                         <div className="rounded-2xl bg-white border border-gray-200 p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
                             <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-amber-600 mb-3" />
                             <p className="text-xs text-gray-600 mb-1">Perfect Days</p>
-                            <p className="text-2xl sm:text-3xl font-bold text-gray-800">
-                                {metrics.perfectDays}
-                            </p>
+                            <p className="text-2xl sm:text-3xl font-bold text-gray-800">{Number(metrics.perfectDays || 0)}</p>
                             <TrendIndicator value={12} />
                         </div>
                     </motion.div>
                 </motion.div>
+
 
                 {/* AI Insights Section */}
                 <AnimatePresence>
@@ -1000,6 +1101,6 @@ export default function Overview({
                     </div>
                 </motion.div>
             </div>
-        </motion.div>
+        </motion.div >
     );
 }
