@@ -4,7 +4,7 @@ import { Menu, X, Bell, ChevronDown, LogOut, Search, User } from "lucide-react";
 import axios from "axios";
 import COLORS from "./data/colors";
 
-const API_ORIGIN = import.meta.env.VITE_PRIVATE_API_URL || "https://habitmetric.onrender.com";
+const API_ORIGIN = import.meta.env.VITE_PRIVATE_API_URL || "http://localhost:3000";
 
 export default function Navbar({ sidebarOpen, setSidebarOpen, user: propUser = null, darkMode, setDarkMode, showProfileMenu: propShowProfileMenu = false, setShowProfileMenu: propSetShowProfileMenu }) {
     const [user, setUser] = useState(propUser ?? null);

@@ -1,7 +1,9 @@
+"use client";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import StatCard from "../Components/StatCard";
 import COLORS from "../data/colors";
+import axios from "axios";
 import {
     Flame,
     Target,
@@ -52,12 +54,13 @@ import {
     ComposedChart,
 } from "recharts";
 
+const API_ORIGIN = import.meta.env.VITE_PRIVATE_API_URL || "http://localhost:3000";
+
 export default function Overview({
     habits = [],
     todayCheckins = [],
     currentMood = "Neutral",
     weeklyProgress = [],
-    userProfile = {},
 }) {
 
 
@@ -67,6 +70,9 @@ export default function Overview({
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [showInsights, setShowInsights] = useState(true);
     const [activeTab, setActiveTab] = useState("overview");
+
+    const [user, setUser] = useState(null);
+
 
     useEffect(() => {
         const hour = new Date().getHours();
@@ -84,8 +90,80 @@ export default function Overview({
         }, 150);
     };
 
+    useEffect(() => {
+        let cancelled = false;
+
+        const fetchProfile = async () => {
+            try {
+                console.log("Overview: fetchProfile start", { API_ORIGIN });
+                setUser(null);
+
+                const resp = await axios.get(`${API_ORIGIN}/protected/profile`, {
+                    withCredentials: true,
+                    timeout: 15000,
+                });
+
+                console.log("Overview: API response", resp?.data);
+                if (cancelled) {
+                    console.log("Overview: cancelled after response");
+                    return;
+                }
+
+                const resolved = resp.data?.user ?? ((resp.data?.name || resp.data?.email) ? resp.data : null);
+                if (resolved) {
+                    console.log("Overview: resolved user from API", resolved);
+                    setUser(resolved);
+                    return;
+                }
+
+                const token = localStorage.getItem("token");
+                console.log("Overview: token from localStorage:", !!token);
+
+                if (token) {
+                    try {
+                        const clean = token.startsWith('"') && token.endsWith('"') ? token.slice(1, -1) : token;
+                        const payload = JSON.parse(atob(clean.split(".")[1]));
+                        console.log("Overview: token payload:", payload);
+                        setUser({ name: payload.name ?? payload.email ?? "User", email: payload.email ?? "" });
+                        return;
+                    } catch (e) {
+                        console.warn("Overview: token decode failed", e);
+                    }
+                }
+
+                console.log("Overview: falling back to default user");
+                setUser({ name: "User", email: "no-email@example.com" });
+            } catch (err) {
+                console.error("Overview: fetchProfile error", err?.response ?? err);
+                const status = err?.response?.status;
+                if (status === 401 || status === 403) {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("refreshToken");
+                }
+
+                const token = localStorage.getItem("token");
+                if (token) {
+                    try {
+                        const clean = token.startsWith('"') && token.endsWith('"') ? token.slice(1, -1) : token;
+                        const payload = JSON.parse(atob(clean.split(".")[1]));
+                        console.log("Overview: token payload inside catch:", payload);
+                        setUser({ name: payload.name ?? payload.email ?? "User", email: payload.email ?? "" });
+                        return;
+                    } catch (e) {
+                        console.warn("Overview: token decode failed in catch", e);
+                    }
+                }
+
+                setUser({ name: "User", email: "no-email@example.com" });
+            }
+        };
+
+        fetchProfile();
+        return () => { cancelled = true; };
+    }, []);
 
 
+    const displayName = user === null ? "Loading…" : (user?.name ?? "User");
 
 
 
@@ -329,10 +407,12 @@ export default function Overview({
                         <p className="text-sm sm:text-base lg:text-lg text-gray-600">
                             Good {timeOfDay},{" "}
                             <span className="font-semibold text-indigo-600">
-                                {userProfile.name || "User"}
+                                {displayName ? displayName : "Loading…"}
                             </span>
+
                             ! Here's your comprehensive progress analysis
                         </p>
+
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2 sm:gap-3">
